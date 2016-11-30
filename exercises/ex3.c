@@ -34,7 +34,7 @@ int main(int argc,char **argv)
   */
   ierr = VecCreate(PETSC_COMM_WORLD,&x);CHKERRQ(ierr);
   //TODO task 3
-  ierr = VecSetSizes(x,rank+1 ,PETSC_DECIDE);CHKERRQ(ierr);
+  ierr = VecSetSizes(x,rank+1,rank+1);CHKERRQ(ierr);
   ierr = VecSetFromOptions(x);CHKERRQ(ierr);
   ierr = VecSet(x,1.0);CHKERRQ(ierr);
 
