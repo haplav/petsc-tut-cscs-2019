@@ -141,14 +141,12 @@ int main(int argc,char **args)
                       Solve the linear system
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = KSPSolve(ksp,b,x);CHKERRQ(ierr);
-
-
-  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                      Check solution and clean up
-     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = KSPGetIterationNumber(ksp,&its);CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD,"Iterations %D\n",its);CHKERRQ(ierr);
 
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                      Clean-up
+     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   /*
      Free work space.  All PETSc objects should be destroyed when they
      are no longer needed.
