@@ -43,3 +43,6 @@ ex8: ex8.o   chkopts
 	-${CLINKER} -o ex8 ex8.o  ${PETSC_SNES_LIB}
 	${RM} -f ex8.o
 
+ex9: ex9.o   chkopts
+	-${CLINKER} -o ex9 ex9.o  ${PETSC_TAO_LIB}
+	${RM} -f ex9.o
