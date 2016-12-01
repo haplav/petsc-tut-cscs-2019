@@ -10,6 +10,7 @@ EXAMPLESF       =
 
 include ${PETSC_DIR}/lib/petsc/conf/variables
 include ${PETSC_DIR}/lib/petsc/conf/rules
+include ${PERMON_DIR}/lib/permon/conf/permon_base
 
 ex1: ex1.o   chkopts
 	-${CLINKER} -o ex1 ex1.o  ${PETSC_SYS_LIB}
@@ -46,3 +47,7 @@ ex8: ex8.o   chkopts
 ex9: ex9.o   chkopts
 	-${CLINKER} -o ex9 ex9.o  ${PETSC_TAO_LIB}
 	${RM} -f ex9.o
+
+ex10: ex10.o   chkopts
+	-${CLINKER} -o ex10 ex10.o  ${PERMON_LIB}
+	${RM} -f ex10.o
