@@ -1,0 +1,15 @@
+
+ALL: ex11
+
+CFLAGS	        =
+FFLAGS	        = 
+CPPFLAGS        =
+FPPFLAGS        =
+EXAMPLESC       = 
+EXAMPLESF       = 
+
+include ${PERMON_DIR}/lib/permon/conf/permon_base
+
+ex11: ex11.o   chkopts
+	-${CLINKER} -o ex11 ex11.o  ${PERMON_LIB}
+	${RM} -f ex11.o
