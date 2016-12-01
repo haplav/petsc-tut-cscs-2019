@@ -1,6 +1,6 @@
-/* This does the same as ex7 but using SNES */
+/* This does the same as ex7 but using TAO */
 
-static char help[] = "Solves a tridiagonal linear system as a nonlinear problem using SNES.\n\n";
+static char help[] = "Solves a tridiagonal linear system with bounds using TAO.\n\n";
 
 #include <petsctao.h>
 #include <petscdm.h>
@@ -56,6 +56,7 @@ int main(int argc,char **args)
   ierr = VecDuplicate(x,&xl);CHKERRQ(ierr);
   ierr = VecDuplicate(x,&xu);CHKERRQ(ierr);  
   ierr = VecSet(xl, 0);CHKERRQ(ierr);
+  ierr = PetscOptionsGetScalar(NULL,NULL,"-ub",&ub,NULL);CHKERRQ(ierr);
   ierr = VecSet(xu, ub);CHKERRQ(ierr);
 
   /*
@@ -69,7 +70,7 @@ int main(int argc,char **args)
   ierr = MatSetFromOptions(user.H);CHKERRQ(ierr);
   
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                Create the linear solver and set various options
+                Create the TAO solver and set various options
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = TaoCreate(PETSC_COMM_WORLD,&tao);CHKERRQ(ierr);
   ierr = TaoSetType(tao,TAOBLMVM);CHKERRQ(ierr);

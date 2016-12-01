@@ -56,6 +56,7 @@ int main(int argc,char **args)
   ierr = VecDuplicate(x,&xl);CHKERRQ(ierr);
   ierr = VecDuplicate(x,&xu);CHKERRQ(ierr);  
   ierr = VecSet(xl, 0);CHKERRQ(ierr);
+  ierr = PetscOptionsGetScalar(NULL,NULL,"-ub",&ub,NULL);CHKERRQ(ierr);
   ierr = VecSet(xu, ub);CHKERRQ(ierr);
 
   /*
