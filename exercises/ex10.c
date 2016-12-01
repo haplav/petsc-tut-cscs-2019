@@ -1,4 +1,4 @@
-/* This does the same as ex7 but using TAO */
+/* This solves linear system with bounds using TAO */
 
 static char help[] = "Solves a tridiagonal linear system with bounds using TAO.\n\n";
 

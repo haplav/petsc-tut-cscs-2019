@@ -1,6 +1,6 @@
-/* This does the same as ex7 but using SNES */
+/* This does the same as ex10 but using PERMON */
 
-static char help[] = "Solves a tridiagonal linear system as a nonlinear problem using SNES.\n\n";
+static char help[] = "Solves a tridiagonal linear system with bounds using PERMON.\n\n";
 
 #include <fllopqps.h>
 #include <petscdm.h>
@@ -48,15 +48,17 @@ int main(int argc,char **args)
   ierr = PetscObjectSetName((PetscObject) x, "Solution");CHKERRQ(ierr);
   ierr = VecSetFromOptions(x);CHKERRQ(ierr);
   ierr = VecDuplicate(x,&user.B);CHKERRQ(ierr);
-  ierr = FormRHS(user.dm, user.B);CHKERRQ(ierr);
+  ierr = VecDuplicate(x,&xl);CHKERRQ(ierr);
+  ierr = VecDuplicate(x,&xu);CHKERRQ(ierr);  
+  
   /*
      Set the same value to all vector entries.
   */
+  ierr = FormRHS(user.dm, user.B);CHKERRQ(ierr);
   ierr = VecSet(x,0.0);CHKERRQ(ierr);
-  ierr = VecDuplicate(x,&xl);CHKERRQ(ierr);
-  ierr = VecDuplicate(x,&xu);CHKERRQ(ierr);  
-  ierr = VecSet(xl, 0);CHKERRQ(ierr);
-  ierr = PetscOptionsGetScalar(NULL,NULL,"-ub",&ub,NULL);CHKERRQ(ierr);
+  ierr = VecSet(xl,0.0);CHKERRQ(ierr);
+
+  ierr = PetscOptionsGetScalar(NULL,NULL,"-ub",&ub,NULL);CHKERRQ(ierr); //set upper bound
   ierr = VecSet(xu, ub);CHKERRQ(ierr);
 
   /*
@@ -72,7 +74,6 @@ int main(int argc,char **args)
   
   /* Prescribe the QP problem. */
   ierr = QPCreate(PETSC_COMM_WORLD, &qp);CHKERRQ(ierr);
-  //ierr = QPSetOperator(qp, user.H, QP_SYM_SYMMETRIC);CHKERRQ(ierr);
   ierr = QPSetOperator(qp, user.H);CHKERRQ(ierr);
   ierr = QPSetRhs(qp, user.B);CHKERRQ(ierr); 
   ierr = QPSetBox(qp, xl, xu);CHKERRQ(ierr);
@@ -80,12 +81,11 @@ int main(int argc,char **args)
   /* Create the QP solver (QPS). */
   ierr = QPSCreate(PETSC_COMM_WORLD, &qps);CHKERRQ(ierr);
   
-  /* Create the TAO solver*/
+  /* Set the TAO solver, can be set using -qps_type tao */
   //ierr = QPSSetType(qps,QPSTAO);CHKERRQ(ierr);
 
   /* Insert the QP problem into the solver. */
   ierr = QPSSetQP(qps, qp);CHKERRQ(ierr);
-  
   
   /* Set the QPS monitor */
   ierr = QPSMonitorSet(qps,QPSMonitorDefault,NULL,0);CHKERRQ(ierr);
@@ -108,10 +108,8 @@ int main(int argc,char **args)
   ierr = VecDestroy(&xu);CHKERRQ(ierr);
   ierr = MatDestroy(&user.H);CHKERRQ(ierr);
   ierr = VecDestroy(&user.B);CHKERRQ(ierr);
-  /* Free TAO data structures */
 
-  ierr = DMDestroy(&user.dm);CHKERRQ(ierr);
-  
+  ierr = DMDestroy(&user.dm);CHKERRQ(ierr);  
   ierr = PetscFinalize();CHKERRQ(ierr);
   return 0;
 }
