@@ -27,7 +27,7 @@ int main(int argc,char **args)
   PetscErrorCode ierr;
   PetscInt       n = 5, N;
   AppCtx         user;
-  PetscScalar    ub=1.75;
+  PetscScalar    ub=0.105;
   Vec		 x,xl,xu;
   KSP            ksp;
 
@@ -152,11 +152,13 @@ static PetscErrorCode FormRHS(DM da, Vec b)
 {
   PetscErrorCode ierr;
   PetscInt N;
+  PetscScalar alpha;
 
   PetscFunctionBeginUser;
   ierr = VecGetSize(b,&N);CHKERRQ(ierr);
   ierr = VecSet(b,-1.0);CHKERRQ(ierr);
-
+  alpha = (PetscScalar) 1/((N-1)*(N-1));
+  ierr = VecScale(b,alpha);CHKERRQ(ierr);
   /* take into account Dirichlet b.c. */
   {
     PetscInt row[2] = {0, N-1};
