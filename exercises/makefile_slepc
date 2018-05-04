@@ -1,0 +1,13 @@
+
+ALL:
+
+CFLAGS	        =
+FFLAGS	        =
+CPPFLAGS        =
+FPPFLAGS        =
+
+include ${SLEPC_DIR}/lib/slepc/conf/slepc_common
+
+ex6_slepc: ex6_slepc.o   chkopts
+	-${CLINKER} -o ex6_slepc ex6_slepc.o  ${PETSC_KSP_LIB} ${SLEPC_EPS_LIB}
+	${RM} -f ex6_slepc.o
