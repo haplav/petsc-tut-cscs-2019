@@ -52,7 +52,7 @@ int main(int argc,char **args)
      Set the same value to all vector entries.
   */
   ierr = VecSet(x,0.0);CHKERRQ(ierr);
-  ierr = VecSet(b,1.0);CHKERRQ(ierr);
+  ierr = VecSetRandom(b,NULL);CHKERRQ(ierr);
     
   /*
      Create matrix.  When using MatCreate(), the matrix format can
