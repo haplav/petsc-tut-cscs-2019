@@ -2,11 +2,9 @@
 ALL:
 
 CFLAGS	        =
-FFLAGS	        = -I${PETSC_DIR}/include/petsc/finclude
+FFLAGS	        =
 CPPFLAGS        =
 FPPFLAGS        =
-EXAMPLESC       = ex1.c
-EXAMPLESF       = 
 
 include ${PETSC_DIR}/lib/petsc/conf/variables
 include ${PETSC_DIR}/lib/petsc/conf/rules
