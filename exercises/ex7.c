@@ -8,8 +8,10 @@ static char help[] = "Solves a tridiagonal linear system with KSP.\n\n";
 
 static PetscErrorCode ComputeOperators(KSP ksp, Mat A, Mat B, void *ctx);
 static PetscErrorCode ComputeRHS(KSP ksp, Vec b, void *ctx);
+static PetscErrorCode ComputeInitialGuess(KSP ksp, Vec b, void *ctx);
 static PetscErrorCode FormMatrix(DM da, Mat A);
 static PetscErrorCode FormRHS(DM da, Vec b);
+static PetscErrorCode FormInitialGuess(DM da, Vec x);
 
 #undef __FUNCT__
 #define __FUNCT__ "main"
@@ -20,9 +22,12 @@ int main(int argc,char **args)
   PC             pc;          /* preconditioner context */
   PetscErrorCode ierr;
   PetscInt       n = 5, N;
+  PetscBool      nonzeroguess = PETSC_TRUE;
 
   PetscInitialize(&argc,&args,(char*)0,help);
   ierr = PetscOptionsGetInt(NULL,NULL,"-n",&n,NULL);CHKERRQ(ierr);
+  ierr = PetscOptionsGetBool(NULL,NULL,"-nonzero_guess",&nonzeroguess,NULL);CHKERRQ(ierr);
+
 
   /*
      Create DMDA context for structured 1D problem.
@@ -41,6 +46,11 @@ int main(int argc,char **args)
   ierr = KSPSetDM(ksp,da);CHKERRQ(ierr);
   ierr = KSPSetComputeOperators(ksp,ComputeOperators,NULL);CHKERRQ(ierr);
   ierr = KSPSetComputeRHS(ksp,ComputeRHS,NULL);CHKERRQ(ierr);
+  if (nonzeroguess) {
+    ierr = KSPSetComputeInitialGuess(ksp,ComputeInitialGuess,NULL);CHKERRQ(ierr);
+    ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
+  }
+
 
   ierr = KSPSetType(ksp,KSPCG);CHKERRQ(ierr);
   ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
@@ -123,6 +133,19 @@ static PetscErrorCode FormRHS(DM da, Vec b)
 }
 
 #undef __FUNCT__
+#define __FUNCT__ "FormInitialGuess"
+static PetscErrorCode FormInitialGuess(DM da, Vec x)
+{
+  PetscErrorCode ierr;
+  PetscScalar p = -1e3;
+
+  PetscFunctionBeginUser;
+  ierr = VecSet(x,p);CHKERRQ(ierr);
+  PetscFunctionReturn(0);
+}
+
+
+#undef __FUNCT__
 #define __FUNCT__ "ComputeOperators"
 static PetscErrorCode ComputeOperators(KSP ksp, Mat A, Mat B, void *ctx)
 {
@@ -145,5 +168,18 @@ static PetscErrorCode ComputeRHS(KSP ksp, Vec b, void *ctx)
   PetscFunctionBeginUser;
   ierr = KSPGetDM(ksp,&dm);CHKERRQ(ierr);
   ierr = FormRHS(dm,b);CHKERRQ(ierr);
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "ComputeInitialGuess"
+static PetscErrorCode ComputeInitialGuess(KSP ksp, Vec x, void *ctx)
+{
+  PetscErrorCode ierr;
+  DM dm;
+
+  PetscFunctionBeginUser;
+  ierr = KSPGetDM(ksp,&dm);CHKERRQ(ierr);
+  ierr = FormInitialGuess(dm,x);CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
