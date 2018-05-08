@@ -42,6 +42,8 @@ int main(int argc,char **args)
      Create DMDA context for structured 1D problem.
   */
   ierr = DMDACreate1d(PETSC_COMM_WORLD,DM_BOUNDARY_NONE,N,1,1,NULL,&da);CHKERRQ(ierr);
+  ierr = DMSetFromOptions(da);CHKERRQ(ierr);
+  ierr = DMSetUp(da);CHKERRQ(ierr);
 
   /*
      Create vectors.  We get 1 vector from DM and
