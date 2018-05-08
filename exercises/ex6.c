@@ -23,7 +23,7 @@ int main(int argc,char **args)
   PetscInt       nel, nen;
   const PetscInt *e;
   PetscScalar    rho;
-  PetscScalar    value[4];
+  PetscScalar    value[4], bvalue[2];
   PetscBool      nonzeroguess = PETSC_TRUE;
 
   PetscInitialize(&argc,&args,(char*)0,help);
@@ -58,7 +58,7 @@ int main(int argc,char **args)
      Set the same value to all vector entries.
   */
   ierr = VecSet(x,0.0);CHKERRQ(ierr);
-  ierr = VecSet(b,1.0);CHKERRQ(ierr);
+  ierr = VecSet(b,0.0);CHKERRQ(ierr);
     
   /*
      Get preallocated matrix from DM. 
@@ -83,12 +83,16 @@ int main(int argc,char **args)
      Assemble matrix
   */
   value[0] = 1.0; value[1] = -1.0; value[2] = -1.0; value[3] = 1.0;
+  bvalue[0] = 1.0; bvalue[1] = 1.0;
   for (i=0; i<nel; i++) {
     ierr = MatSetValuesLocal(A, 2, e+nen*i, 2, e+nen*i, value, ADD_VALUES);CHKERRQ(ierr);
+    ierr = VecSetValuesLocal(b, 2, e+nen*i, bvalue, ADD_VALUES);CHKERRQ(ierr);
   }
   ierr = DMDARestoreElements(da, &nel, &nen, &e);CHKERRQ(ierr);
   ierr = MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
   ierr = MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+  ierr = VecAssemblyBegin(b);CHKERRQ(ierr);
+  ierr = VecAssemblyEnd(b);CHKERRQ(ierr);
 
   ierr = VecDuplicate(b,&d);CHKERRQ(ierr);
   ierr = MatGetDiagonal(A, d);CHKERRQ(ierr);
@@ -145,14 +149,12 @@ int main(int argc,char **args)
                       Solve the linear system
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = KSPSolve(ksp,b,x);CHKERRQ(ierr);
-
-
-  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                      Check solution and clean up
-     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = KSPGetIterationNumber(ksp,&its);CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD,"Iterations %D\n",its);CHKERRQ(ierr);
 
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                      Clean-up
+     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   /*
      Free work space.  All PETSc objects should be destroyed when they
      are no longer needed.
