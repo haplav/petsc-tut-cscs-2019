@@ -56,10 +56,6 @@ int main(int argc,char **args)
     
   /*
      Get preallocated matrix from DM. 
-
-     Performance tuning note:  For problems of substantial size,
-     preallocation of matrix memory is crucial for attaining good
-     performance. See the matrix chapter of the users manual for details.
   */
   ierr = DMCreateMatrix(da,&A);CHKERRQ(ierr);
   ierr = MatSetFromOptions(A);CHKERRQ(ierr);
