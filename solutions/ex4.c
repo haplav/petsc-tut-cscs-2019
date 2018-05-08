@@ -15,8 +15,8 @@ static char help[] = "Creates a tridiagonal linear system (FEM discretization of
 #define __FUNCT__ "main"
 int main(int argc,char **args)
 {
-  Vec            x, b;         /* approx solution, RHS */
-  Mat            A;             /* linear system matrix */
+  Vec            x, b;        /* approx solution, RHS */
+  Mat            A;           /* linear system matrix */
   PetscViewer    v;
   PetscErrorCode ierr;
   PetscInt       i, n = 5, N, Istart, Iend;
