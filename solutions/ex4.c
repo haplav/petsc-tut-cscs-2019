@@ -17,12 +17,14 @@ int main(int argc,char **args)
 {
   Vec            x, b;         /* approx solution, RHS */
   Mat            A;             /* linear system matrix */
+  PetscViewer    v;
   PetscErrorCode ierr;
   PetscInt       i, n = 5, N, Istart, Iend;
   PetscInt       row[2], col[2];
-  PetscScalar    value[4];
+  PetscScalar    value[4], bvalue[2];
 
   PetscInitialize(&argc,&args,(char*)0,help);
+  v = PETSC_VIEWER_STDOUT_WORLD;
   ierr = PetscOptionsGetInt(NULL,NULL,"-n",&n,NULL);CHKERRQ(ierr);
 
 
@@ -45,7 +47,7 @@ int main(int argc,char **args)
      Set the same value to all vector entries.
   */
   ierr = VecSet(x,0.0);CHKERRQ(ierr);
-  ierr = VecSet(b,1.0);CHKERRQ(ierr);
+  ierr = VecSet(b,0.0);CHKERRQ(ierr);
     
   /*
      Create matrix.  When using MatCreate(), the matrix format can
@@ -57,6 +59,7 @@ int main(int argc,char **args)
   */
   ierr = MatCreate(PETSC_COMM_WORLD,&A);CHKERRQ(ierr);
   ierr = MatSetSizes(A,n,n,PETSC_DECIDE,PETSC_DECIDE);CHKERRQ(ierr);
+  //ierr = MatSetType(A,MATDENSE);CHKERRQ(ierr);
   ierr = MatSetFromOptions(A);CHKERRQ(ierr);
   ierr = MatSetUp(A);CHKERRQ(ierr);
 
@@ -67,14 +70,27 @@ int main(int argc,char **args)
      Assemble matrix
   */
   value[0] = 1.0; value[1] = -1.0; value[2] = -1.0; value[3] = 1.0;
+  bvalue[0] = 1.0; bvalue[1] = 1.0;
   if (Istart == 0) Istart = 1;
   for (i=Istart; i<Iend; i++) {
     row[0] = i-1; row[1] = i;
     col[0] = i-1; col[1] = i;
     ierr   = MatSetValues(A,2,row,2,col,value,ADD_VALUES);CHKERRQ(ierr);
+    ierr   = VecSetValues(b,2,row,bvalue,ADD_VALUES);CHKERRQ(ierr);
   }
   ierr = MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
   ierr = MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+  ierr = VecAssemblyBegin(b);CHKERRQ(ierr);
+  ierr = VecAssemblyEnd(b);CHKERRQ(ierr);
+
+  ierr = MatMult(A,b,x);CHKERRQ(ierr);
+  ierr = VecScale(x,2.0);CHKERRQ(ierr);
+
+  //ierr = PetscViewerPushFormat(v,PETSC_VIEWER_ASCII_INFO_DETAIL);CHKERRQ(ierr);
+  //ierr = MatView(A,v);CHKERRQ(ierr);
+  //ierr = VecView(b,v);CHKERRQ(ierr);
+  //ierr = VecView(x,v);CHKERRQ(ierr);
+  //ierr = PetscViewerPopFormat(v);CHKERRQ(ierr);
 
   /*
      Free work space.  All PETSc objects should be destroyed when they
