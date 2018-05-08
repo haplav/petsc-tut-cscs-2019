@@ -22,6 +22,7 @@ int main(int argc,char **args)
   PC             pc;          /* preconditioner context */
   PetscErrorCode ierr;
   PetscInt       n = 5, N;
+  PetscInt       its;
   PetscBool      nonzeroguess = PETSC_TRUE;
 
   PetscInitialize(&argc,&args,(char*)0,help);
@@ -34,6 +35,8 @@ int main(int argc,char **args)
   */
   ierr = MPI_Allreduce(&n, &N, 1, MPI_INT, MPI_SUM, PETSC_COMM_WORLD);CHKERRQ(ierr);
   ierr = DMDACreate1d(PETSC_COMM_WORLD,DM_BOUNDARY_NONE,N,1,1,NULL,&da);CHKERRQ(ierr);
+  ierr = DMSetFromOptions(da);CHKERRQ(ierr);
+  ierr = DMSetUp(da);CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 Create the linear solver and set various options
@@ -44,6 +47,10 @@ int main(int argc,char **args)
      Associate KSP with DM.
   */
   ierr = KSPSetDM(ksp,da);CHKERRQ(ierr);
+
+  /*
+     Set functions that compute the matrix, RHS and initial guess.
+  */
   ierr = KSPSetComputeOperators(ksp,ComputeOperators,NULL);CHKERRQ(ierr);
   ierr = KSPSetComputeRHS(ksp,ComputeRHS,NULL);CHKERRQ(ierr);
   if (nonzeroguess) {
@@ -52,21 +59,48 @@ int main(int argc,char **args)
   }
 
 
+  /*
+     Set linear solver defaults for this problem (optional).
+     - By extracting the KSP and PC contexts from the KSP context,
+       we can then directly call any KSP and PC routines to set
+       various options.
+     - The following four statements are optional; all of these
+       parameters could alternatively be specified at runtime via
+       KSPSetFromOptions();
+  */
   ierr = KSPSetType(ksp,KSPCG);CHKERRQ(ierr);
   ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
   ierr = PCSetType(pc,PCNONE);CHKERRQ(ierr);
+  ierr = KSPSetTolerances(ksp,1.e-5,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
 
+  /*
+    Set runtime options, e.g.,
+        -ksp_type <type> -pc_type <type> -ksp_monitor -ksp_rtol <rtol>
+    These options will override those specified above as long as
+    KSPSetFromOptions() is called _after_ any other customization
+    routines.
+  */
   ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                       Solve the linear system
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = KSPSolve(ksp,NULL,NULL);CHKERRQ(ierr);
+  ierr = KSPGetIterationNumber(ksp,&its);CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,"Iterations %D\n",its);CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                      Finalize
+                      Clean-up
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = KSPDestroy(&ksp);CHKERRQ(ierr);
+  ierr = DMDestroy(&da);CHKERRQ(ierr);
+
+  /*
+     Always call PetscFinalize() before exiting a program.  This routine
+       - finalizes the PETSc libraries as well as MPI
+       - provides summary and diagnostic information if certain runtime
+         options are chosen (e.g., -log_summary).
+  */
   ierr = PetscFinalize();CHKERRQ(ierr);
   return 0;
 }
