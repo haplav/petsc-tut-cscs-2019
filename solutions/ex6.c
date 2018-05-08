@@ -107,6 +107,15 @@ int main(int argc,char **args)
   ierr = KSPSetOperators(ksp,A,A);CHKERRQ(ierr);
 
   /*
+     Set nonzero initial guess. Note we use ugly one here to affect number of iterations.
+  */
+  if (nonzeroguess) {
+    PetscScalar p = -1e3;
+    ierr = VecSet(x,p);CHKERRQ(ierr);
+    ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
+  }
+
+  /*
      Set linear solver defaults for this problem (optional).
      - By extracting the KSP and PC contexts from the KSP context,
        we can then directly call any KSP and PC routines to set
@@ -128,12 +137,6 @@ int main(int argc,char **args)
     routines.
   */
   ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
-
-  if (nonzeroguess) {
-    PetscScalar p = -1e3;
-    ierr = VecSet(x,p);CHKERRQ(ierr);
-    ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
-  }
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                       Solve the linear system
