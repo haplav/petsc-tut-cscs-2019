@@ -1,4 +1,4 @@
-/* Adopted from http://www.mcs.anl.gov/petsc/petsc-current/src/sys/classes/viewer/examples/tutorials/ex1.c.html */
+/* Adopted from $PETSC_DIR/src/sys/classes/viewer/examples/tutorials/ex1.c */
 
 /*
    Build with
@@ -9,8 +9,6 @@ static char help[] = "Appends to an ASCII file.\n\n";
 
 #include <petscviewer.h>
 
-#undef __FUNCT__
-#define __FUNCT__ "main"
 int main(int argc,char **args)
 {
   PetscViewer    viewer;
@@ -20,7 +18,7 @@ int main(int argc,char **args)
   PetscBool      flg;
   PetscMPIInt    rank;
 
-  PetscInitialize(&argc,&args,(char*)0,help);
+  ierr = PetscInitialize(&argc,&args,(char*)0,help);if (ierr) return ierr;
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD,&rank);CHKERRQ(ierr);
 
   ierr = PetscOptionsGetString(NULL,NULL,"-f",filename,sizeof(filename),&flg);CHKERRQ(ierr);
@@ -55,6 +53,7 @@ int main(int argc,char **args)
   ierr = PetscViewerFlush(viewer);CHKERRQ(ierr);
   ierr = PetscViewerASCIIPopSynchronized(viewer);CHKERRQ(ierr);
 
-  ierr = PetscFinalize();CHKERRQ(ierr);
-  return 0;
+  ierr = PetscViewerDestroy(&viewer);CHKERRQ(ierr);
+  ierr = PetscFinalize();
+  return ierr;
 }
