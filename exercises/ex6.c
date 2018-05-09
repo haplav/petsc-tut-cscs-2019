@@ -94,6 +94,9 @@ int main(int argc,char **args)
   row[0]=0; row[1]=N-1;
   bvalue[0] = 0.0; bvalue[1] = 0.0;
   ierr = VecSetValues(x,2,row,bvalue,INSERT_VALUES);CHKERRQ(ierr);
+  ierr = VecAssemblyBegin(x);CHKERRQ(ierr);
+  ierr = VecAssemblyEnd(x);CHKERRQ(ierr);
+
   ierr = MatZeroRowsColumns(A,2,row,rho,x,b); CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
