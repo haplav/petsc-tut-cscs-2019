@@ -159,12 +159,13 @@ static PetscErrorCode FormRHS(DM da, Vec b)
     ierr = VecSetValuesLocal(b, 2, e+nen*i, bvalue, ADD_VALUES);CHKERRQ(ierr);
   }
   ierr = DMDARestoreElements(da, &nel, &nen, &e);CHKERRQ(ierr);
+  ierr = VecAssemblyBegin(b);CHKERRQ(ierr);
+  ierr = VecAssemblyEnd(b);CHKERRQ(ierr);
 
   /* account for Dirichlet b.c. */
   bvalue[0] = 0.0; bvalue[1] = 0.0;
   row[0]=0; row[1]=N-1;
   ierr = VecSetValues(b,2,row,bvalue,INSERT_VALUES);CHKERRQ(ierr);
-
   ierr = VecAssemblyBegin(b);CHKERRQ(ierr);
   ierr = VecAssemblyEnd(b);CHKERRQ(ierr);
   PetscFunctionReturn(0);
