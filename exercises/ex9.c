@@ -1,9 +1,6 @@
+/* Adopted from $PETSC_DIR/src/snes/examples/tutorials/ex1.c */
 
 static char help[] = "Newton's method for a two-variable system, sequential.\n\n";
-
-/*T
-   Concepts: SNES^basic example
-T*/
 
 /*
    Include "petscsnes.h" so that we can use SNES solvers.  Note that this
@@ -34,8 +31,6 @@ extern PetscErrorCode FormFunction1(SNES,Vec,Vec,void*);
 extern PetscErrorCode FormJacobian2(SNES,Vec,Mat,Mat,void*);
 extern PetscErrorCode FormFunction2(SNES,Vec,Vec,void*);
 
-#undef __FUNCT__
-#define __FUNCT__ "main"
 int main(int argc,char **argv)
 {
   SNES           snes;         /* nonlinear solver context */
@@ -49,7 +44,7 @@ int main(int argc,char **argv)
   PetscScalar    pfive = .5,*xx;
   PetscBool      flg;
 
-  PetscInitialize(&argc,&argv,(char*)0,help);
+  ierr = PetscInitialize(&argc,&argv,(char*)0,help);if (ierr) return ierr;
   ierr = MPI_Comm_size(PETSC_COMM_WORLD,&size);CHKERRQ(ierr);
   if (size > 1) SETERRQ(PETSC_COMM_WORLD,PETSC_ERR_SUP,"Example is only for sequential runs");
 
@@ -151,11 +146,9 @@ int main(int argc,char **argv)
   ierr = VecDestroy(&x);CHKERRQ(ierr); ierr = VecDestroy(&r);CHKERRQ(ierr);
   ierr = MatDestroy(&J);CHKERRQ(ierr); ierr = SNESDestroy(&snes);CHKERRQ(ierr);
   ierr = PetscFinalize();
-  return 0;
+  return ierr;
 }
 /* ------------------------------------------------------------------- */
-#undef __FUNCT__
-#define __FUNCT__ "FormFunction1"
 /*
    FormFunction1 - Evaluates nonlinear function, F(x).
 
@@ -193,8 +186,6 @@ PetscErrorCode FormFunction1(SNES snes,Vec x,Vec f,void *ctx)
   return 0;
 }
 /* ------------------------------------------------------------------- */
-#undef __FUNCT__
-#define __FUNCT__ "FormJacobian1"
 /*
    FormJacobian1 - Evaluates Jacobian matrix.
 
@@ -247,8 +238,6 @@ PetscErrorCode FormJacobian1(SNES snes,Vec x,Mat jac,Mat B,void *dummy)
 }
 
 /* ------------------------------------------------------------------- */
-#undef __FUNCT__
-#define __FUNCT__ "FormFunction2"
 PetscErrorCode FormFunction2(SNES snes,Vec x,Vec f,void *dummy)
 {
   PetscErrorCode    ierr;
@@ -279,8 +268,6 @@ PetscErrorCode FormFunction2(SNES snes,Vec x,Vec f,void *dummy)
   return 0;
 }
 /* ------------------------------------------------------------------- */
-#undef __FUNCT__
-#define __FUNCT__ "FormJacobian2"
 PetscErrorCode FormJacobian2(SNES snes,Vec x,Mat jac,Mat B,void *dummy)
 {
   const PetscScalar *xx;
