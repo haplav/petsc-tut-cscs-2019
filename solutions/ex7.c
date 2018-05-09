@@ -23,7 +23,7 @@ int main(int argc,char **args)
   PetscErrorCode ierr;
   PetscInt       n = 5, N;
   PetscInt       its;
-  PetscBool      nonzeroguess = PETSC_TRUE;
+  PetscBool      nonzeroguess = PETSC_FALSE;
 
   PetscInitialize(&argc,&args,(char*)0,help);
   ierr = PetscOptionsGetInt(NULL,NULL,"-n",&n,NULL);CHKERRQ(ierr);
@@ -41,6 +41,9 @@ int main(int argc,char **args)
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 Create the linear solver and set various options
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+  /*
+     Create linear solver context
+  */
   ierr = KSPCreate(PETSC_COMM_WORLD,&ksp);CHKERRQ(ierr);
 
   /*
@@ -55,9 +58,7 @@ int main(int argc,char **args)
   ierr = KSPSetComputeRHS(ksp,ComputeRHS,NULL);CHKERRQ(ierr);
   if (nonzeroguess) {
     ierr = KSPSetComputeInitialGuess(ksp,ComputeInitialGuess,NULL);CHKERRQ(ierr);
-    ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
   }
-
 
   /*
      Set linear solver defaults for this problem (optional).
@@ -72,6 +73,7 @@ int main(int argc,char **args)
   ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
   ierr = PCSetType(pc,PCNONE);CHKERRQ(ierr);
   ierr = KSPSetTolerances(ksp,1.e-5,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
+  ierr = KSPSetInitialGuessNonzero(ksp,nonzeroguess);CHKERRQ(ierr);
 
   /*
     Set runtime options, e.g.,
@@ -115,20 +117,17 @@ static PetscErrorCode FormMatrix(DM da, Mat A)
   const PetscInt *e;
   PetscInt       row[2];
   PetscScalar    rho;
-  PetscScalar    value[4];
+  PetscScalar    value[4] = {1.0, -1.0, -1.0, 1.0};
 
   PetscFunctionBeginUser;
   ierr = MatGetSize(A,&N,NULL);CHKERRQ(ierr);
 
   ierr = DMDAGetElements(da, &nel, &nen, &e);CHKERRQ(ierr);
- 
-  value[0] = 1.0; value[1] = -1.0; value[2] = -1.0; value[3] = 1.0;
   for (i=0; i<nel; i++) {
     ierr = MatSetValuesLocal(A, 2, e+nen*i, 2, e+nen*i, value, ADD_VALUES);CHKERRQ(ierr);
   }
   ierr = MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
   ierr = MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
-
   ierr = DMDARestoreElements(da, &nel, &nen, &e);CHKERRQ(ierr);
 
   ierr = MatCreateVecs(A,&d,NULL);CHKERRQ(ierr);
@@ -138,7 +137,6 @@ static PetscErrorCode FormMatrix(DM da, Mat A)
   ierr = VecDestroy(&d);CHKERRQ(ierr);
 
   row[0]=0; row[1]=N-1;
-  //ierr = MatZeroRowsColumns(A,2,row,rho,x,b); CHKERRQ(ierr);
   ierr = MatZeroRowsColumns(A,2,row,rho,NULL,NULL); CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
@@ -148,21 +146,27 @@ static PetscErrorCode FormMatrix(DM da, Mat A)
 static PetscErrorCode FormRHS(DM da, Vec b)
 {
   PetscErrorCode ierr;
-  PetscInt N;
+  PetscInt       i, nel, nen, N;
+  const PetscInt *e;
+  PetscScalar    bvalue[2] = {1.0, 1.0};
+  PetscInt       row[2];
 
   PetscFunctionBeginUser;
   ierr = VecGetSize(b,&N);CHKERRQ(ierr);
-  ierr = VecSet(b,1.0);CHKERRQ(ierr);
 
-  /* take into account Dirichlet b.c. */
-  {
-    PetscInt row[2] = {0, N-1};
-    PetscScalar val[2] = {0.0, 0.0};
-
-    ierr = VecSetValues(b,2,row,val,INSERT_VALUES);CHKERRQ(ierr);
-    ierr = VecAssemblyBegin(b);CHKERRQ(ierr);
-    ierr = VecAssemblyEnd(b);CHKERRQ(ierr);
+  ierr = DMDAGetElements(da, &nel, &nen, &e);CHKERRQ(ierr);
+  for (i=0; i<nel; i++) {
+    ierr = VecSetValuesLocal(b, 2, e+nen*i, bvalue, ADD_VALUES);CHKERRQ(ierr);
   }
+  ierr = DMDARestoreElements(da, &nel, &nen, &e);CHKERRQ(ierr);
+
+  /* account for Dirichlet b.c. */
+  bvalue[0] = 0.0; bvalue[1] = 0.0;
+  row[0]=0; row[1]=N-1;
+  ierr = VecSetValues(b,2,row,bvalue,INSERT_VALUES);CHKERRQ(ierr);
+
+  ierr = VecAssemblyBegin(b);CHKERRQ(ierr);
+  ierr = VecAssemblyEnd(b);CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
 
