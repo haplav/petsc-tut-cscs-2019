@@ -1,4 +1,4 @@
-/* Adopted from http://www.mcs.anl.gov/petsc/petsc-3.7/src/sys/examples/tutorials/ex2.c.html */
+/* Adopted from $PETSC_DIR/src/sys/examples/tutorials/ex2.c */
 
 /*
    Build with
@@ -22,7 +22,7 @@ int main(int argc,char **argv)
                  runtime.  The user can use the "help" variable place
                  additional help messages in this printout.
   */
-  ierr = PetscInitialize(&argc,&argv,NULL,help);CHKERRQ(ierr);
+  ierr = PetscInitialize(&argc,&args,(char*)0,help);if (ierr) return ierr;
 
   /*
      The following MPI calls return the number of processes
@@ -90,9 +90,9 @@ int main(int argc,char **argv)
      Always call PetscFinalize() before exiting a program.  This routine
        - finalizes the PETSc libraries as well as MPI
        - provides summary and diagnostic information if certain runtime
-         options are chosen (e.g., -log_summary).
+         options are chosen (e.g., -log_view).
      See the PetscFinalize() manpage for more information.
   */
   ierr = PetscFinalize();
-  return 0;
+  return ierr;
 }
