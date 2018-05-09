@@ -8,7 +8,7 @@ You can find slides at http://tinyurl.com/petsc-tut-2018.
 Notes
 -----
 
-Add this to the python configure script (`$PETSC_ARCH.py`) to compile with optimizations:
+Add this to the python configure script (`arch-impi-imkl-linux-opt.py`) to compile with optimizations:
 ```
     '--with-debugging=0',
     '--COPTFLAGS=-ipo -O3 -xCORE-AVX2',
