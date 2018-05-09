@@ -1,4 +1,4 @@
-/* Adopted from http://www.mcs.anl.gov/petsc/petsc-3.7/src/vec/vec/examples/tutorials/ex2.c.html */
+/* Adopted from $PETSC_DIR/src/vec/vec/examples/tutorials/ex2.c */
 
 static char help[] = "Builds a parallel vector with 1 component on the first processor, 2 on the second, etc.\n\
   Then each processor adds one to all elements except the last rank.\n\n";
@@ -11,8 +11,6 @@ static char help[] = "Builds a parallel vector with 1 component on the first pro
 */
 #include <petscvec.h>
 
-#undef __FUNCT__
-#define __FUNCT__ "main"
 int main(int argc,char **argv)
 {
   PetscErrorCode ierr;
@@ -21,7 +19,7 @@ int main(int argc,char **argv)
   PetscScalar    integer = 1.0;
   Vec            x;
 
-  PetscInitialize(&argc,&argv,(char*)0,help);
+  ierr = PetscInitialize(&argc,&argv,(char*)0,help);if (ierr) return ierr;
   ierr = MPI_Comm_rank(PETSC_COMM_WORLD,&rank);CHKERRQ(ierr);
 
   /*
@@ -94,7 +92,7 @@ int main(int argc,char **argv)
       Destroy the vector and finalize PETSc.
   */
   ierr = VecDestroy(&x);CHKERRQ(ierr);
-  ierr = PetscFinalize();CHKERRQ(ierr);
-  return 0;
+  ierr = PetscFinalize();
+  return ierr;
 }
 
