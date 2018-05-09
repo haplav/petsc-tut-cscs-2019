@@ -26,7 +26,7 @@ int main(int argc,char **args)
   PetscInt       row[2], col[2];
   PetscScalar    rho;
   PetscScalar    value[4], bvalue[2];
-  PetscBool      nonzeroguess = PETSC_TRUE;
+  PetscBool      nonzeroguess = PETSC_FALSE;
 
   PetscInitialize(&argc,&args,(char*)0,help);
   ierr = PetscOptionsGetInt(NULL,NULL,"-n",&n,NULL);CHKERRQ(ierr);
@@ -51,7 +51,12 @@ int main(int argc,char **args)
   /*
      Set the same value to all vector entries.
   */
-  ierr = VecSet(x,0.0);CHKERRQ(ierr);
+  if (nonzeroguess) {
+    /* Set nonzero initial guess. Note we use ugly one here to affect number of iterations. */
+    ierr = VecSet(x,-1e3);CHKERRQ(ierr);
+  } else {
+    ierr = VecSet(x,0.0);CHKERRQ(ierr);
+  }
   ierr = VecSet(b,0.0);CHKERRQ(ierr);
     
   /*
@@ -95,6 +100,8 @@ int main(int argc,char **args)
 
   //TODO tasks 5 and 8
   row[0]=0; row[1]=N-1;
+  bvalue[0] = 0.0; bvalue[1] = 0.0;
+  ierr = VecSetValues(x,2,row,bvalue,INSERT_VALUES);CHKERRQ(ierr);
   ierr = MatZeroRowsColumns(A,2,row,rho,x,b); CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -111,16 +118,6 @@ int main(int argc,char **args)
   */
   ierr = KSPSetOperators(ksp,A,A);CHKERRQ(ierr);
 
-  //TODO task 4
-  /*
-     Set nonzero initial guess. Note we use ugly one here to affect number of iterations.
-  */
-  if (nonzeroguess) {
-    PetscScalar p = -1e3;
-    ierr = VecSet(x,p);CHKERRQ(ierr);
-    ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
-  }
-
   /*
      Set linear solver defaults for this problem (optional).
      - By extracting the KSP and PC contexts from the KSP context,
@@ -134,6 +131,8 @@ int main(int argc,char **args)
   ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
   ierr = PCSetType(pc,PCNONE);CHKERRQ(ierr);
   ierr = KSPSetTolerances(ksp,1.e-5,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
+  //TODO task 4
+  ierr = KSPSetInitialGuessNonzero(ksp,nonzeroguess);CHKERRQ(ierr);
 
   /*
     Set runtime options, e.g.,
