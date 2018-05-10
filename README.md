@@ -8,6 +8,12 @@ You can find slides at http://tinyurl.com/petsc-tut-2018.
 Notes
 -----
 
+Filter the error output - only from rank 0:
+```
+mpirun -n 3 ./ex3 2>&1 | grep '^\[0\]'
+
+```
+
 Add this to the python configure script (`arch-impi-imkl-linux-opt.py`) to compile with optimizations:
 ```
     '--with-debugging=0',
