@@ -26,25 +26,21 @@ int main(int argc,char **args)
   PetscInt       nel, nen;
   const PetscInt *e;
   PetscScalar    rho;
-  PetscScalar    value[4];
-  PetscBool      nonzeroguess = PETSC_TRUE;
+  PetscScalar    value[4], bvalue[2];
+  PetscBool      nonzeroguess = PETSC_FALSE;
 
   ierr = SlepcInitialize(&argc,&args,(char*)0,help);CHKERRQ(ierr);
   ierr = PetscOptionsGetInt(NULL,NULL,"-n",&n,NULL);CHKERRQ(ierr);
   ierr = PetscOptionsGetBool(NULL,NULL,"-nonzero_guess",&nonzeroguess,NULL);CHKERRQ(ierr);
 
 
-  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-         Compute the matrix and right-hand-side vector that define
-         the linear system, Ax = b.
-     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
-  ierr = MPI_Allreduce(&n, &N, 1, MPI_INT, MPI_SUM, PETSC_COMM_WORLD);CHKERRQ(ierr);
-
   /*
      Create DMDA context for structured 1D problem.
   */
+  ierr = MPI_Allreduce(&n, &N, 1, MPI_INT, MPI_SUM, PETSC_COMM_WORLD);CHKERRQ(ierr);
   ierr = DMDACreate1d(PETSC_COMM_WORLD,DM_BOUNDARY_NONE,N,1,1,NULL,&da);CHKERRQ(ierr);
+  ierr = DMSetFromOptions(da);CHKERRQ(ierr);
+  ierr = DMSetUp(da);CHKERRQ(ierr);
 
   /*
      Create vectors.  We get 1 vector from DM and
@@ -58,15 +54,16 @@ int main(int argc,char **args)
   /*
      Set the same value to all vector entries.
   */
-  ierr = VecSet(x,0.0);CHKERRQ(ierr);
-  ierr = VecSet(b,1.0);CHKERRQ(ierr);
+  if (nonzeroguess) {
+    /* Set nonzero initial guess. Note we use ugly one here to affect number of iterations. */
+    ierr = VecSet(x,-1e3);CHKERRQ(ierr);
+  } else {
+    ierr = VecSet(x,0.0);CHKERRQ(ierr);
+  }
+  ierr = VecSet(b,0.0);CHKERRQ(ierr);
     
   /*
      Get preallocated matrix from DM. 
-
-     Performance tuning note:  For problems of substantial size,
-     preallocation of matrix memory is crucial for attaining good
-     performance. See the matrix chapter of the users manual for details.
   */
   ierr = DMCreateMatrix(da,&A);CHKERRQ(ierr);
   ierr = MatSetFromOptions(A);CHKERRQ(ierr);
@@ -79,17 +76,21 @@ int main(int argc,char **args)
     e	- the local indices of the elements' vertices
   */
   ierr = DMDAGetElements(da, &nel, &nen, &e);CHKERRQ(ierr);
- 
+
   /*
-     Assemble matrix
+     Assemble matrix and RHS
   */
   value[0] = 1.0; value[1] = -1.0; value[2] = -1.0; value[3] = 1.0;
+  bvalue[0] = 1.0; bvalue[1] = 1.0;
   for (i=0; i<nel; i++) {
     ierr = MatSetValuesLocal(A, 2, e+nen*i, 2, e+nen*i, value, ADD_VALUES);CHKERRQ(ierr);
+    ierr = VecSetValuesLocal(b, 2, e+nen*i, bvalue, ADD_VALUES);CHKERRQ(ierr);
   }
   ierr = DMDARestoreElements(da, &nel, &nen, &e);CHKERRQ(ierr);
   ierr = MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
   ierr = MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+  ierr = VecAssemblyBegin(b);CHKERRQ(ierr);
+  ierr = VecAssemblyEnd(b);CHKERRQ(ierr);
 
   ierr = VecDuplicate(b,&d);CHKERRQ(ierr);
   ierr = MatGetDiagonal(A, d);CHKERRQ(ierr);
@@ -97,6 +98,11 @@ int main(int argc,char **args)
   ierr = VecMax(d,NULL,&rho);CHKERRQ(ierr);
 
   row[0]=0; row[1]=N-1;
+  bvalue[0] = 0.0; bvalue[1] = 0.0;
+  ierr = VecSetValues(x,2,row,bvalue,INSERT_VALUES);CHKERRQ(ierr);
+  ierr = VecAssemblyBegin(x);CHKERRQ(ierr);
+  ierr = VecAssemblyEnd(x);CHKERRQ(ierr);
+
   ierr = MatZeroRowsColumns(A,2,row,rho,x,b); CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -126,6 +132,7 @@ int main(int argc,char **args)
   ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
   ierr = PCSetType(pc,PCNONE);CHKERRQ(ierr);
   ierr = KSPSetTolerances(ksp,1.e-5,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
+  ierr = KSPSetInitialGuessNonzero(ksp,nonzeroguess);CHKERRQ(ierr);
 
   /*
     Set runtime options, e.g.,
@@ -136,21 +143,10 @@ int main(int argc,char **args)
   */
   ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
 
-  if (nonzeroguess) {
-    PetscScalar p = -1e3;
-    ierr = VecSet(x,p);CHKERRQ(ierr);
-    ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
-  }
-
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                       Solve the linear system
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = KSPSolve(ksp,b,x);CHKERRQ(ierr);
-
-
-  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                      Check solution and clean up
-     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = KSPGetIterationNumber(ksp,&its);CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD,"Iterations %D\n",its);CHKERRQ(ierr);
 
@@ -159,6 +155,9 @@ int main(int argc,char **args)
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = SlepcAnalysis(A);CHKERRQ(ierr);
 
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                      Clean-up
+     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   /*
      Free work space.  All PETSc objects should be destroyed when they
      are no longer needed.
@@ -168,6 +167,7 @@ int main(int argc,char **args)
   ierr = VecDestroy(&b);CHKERRQ(ierr);
   ierr = MatDestroy(&A);CHKERRQ(ierr);
   ierr = KSPDestroy(&ksp);CHKERRQ(ierr);
+  ierr = DMDestroy(&da);CHKERRQ(ierr);
 
   /*
      Always call PetscFinalize() before exiting a program.  This routine
@@ -179,9 +179,6 @@ int main(int argc,char **args)
   return 0;
 }
 
-
-#undef __FUNCT__
-#define __FUNCT__ "SlepcAnalysis"
 static PetscErrorCode SlepcAnalysis(Mat A)
 {
   EPS		         eps;
