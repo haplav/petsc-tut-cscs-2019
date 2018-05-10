@@ -2,7 +2,7 @@
 #   source ./env-salomon-debug
 
 module purge
-module load Valgrind intel/2018a
+module load git Valgrind intel/2018a
 module list
 
 export PETSC_DIR=/scratch/work/user/hap014/petsc-tut-it4i-2018/petsc-dev

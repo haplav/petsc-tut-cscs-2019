@@ -2,7 +2,7 @@
 #   source ./env-salomon-debug
 
 module purge
-module load Valgrind MATLAB/2015b-EDU GCC/7.1.0-2.28
+module load git Valgrind MATLAB/2015b-EDU GCC/7.1.0-2.28
 module list
 
 export PETSC_DIR=/scratch/work/user/hap014/petsc-tut-it4i-2018/petsc-dev
