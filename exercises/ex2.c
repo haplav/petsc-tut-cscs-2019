@@ -26,7 +26,7 @@ int main(int argc,char **args)
     ierr = PetscPrintf(PETSC_COMM_WORLD,"Option -f set to value \"%s\".\n",filename);CHKERRQ(ierr);
   }
   //TODO task 6
-  ierr = PetscOptionsGetInt(NULL,NULL,"-n",&n,&flg);CHKERRQ(ierr);
+  ierr = PetscOptionsGetInt(NULL,NULL,"-int",&n,&flg);CHKERRQ(ierr);
   if (flg) {
     ierr = PetscPrintf(PETSC_COMM_WORLD,"Option -n set to value \"%d\".\n",n);CHKERRQ(ierr);
   }
