@@ -6,7 +6,9 @@ module load git Valgrind intel/2018a
 module list
 
 export PETSC_DIR=/scratch/work/user/hap014/petsc-tut-it4i-2018/petsc-dev
+export SLEPC_DIR=/scratch/work/user/hap014/petsc-tut-it4i-2018/slepc-dev
 export PETSC_ARCH=arch-impi-imkl-linux-debug
 
 echo PETSC_DIR=$PETSC_DIR
+echo SLEPC_DIR=$SLEPC_DIR
 echo PETSC_ARCH=$PETSC_ARCH
