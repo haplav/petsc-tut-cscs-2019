@@ -95,11 +95,11 @@ int main(int argc,char **args)
   //TODO task 6 - use MatGetDiagonal, VecAbs, VecMax; store result into rho
   ierr = VecDuplicate(b,&d);CHKERRQ(ierr);
 
+  //TODO tasks 5 and 8
   row[0]=0; row[1]=N-1;
   bvalue[0] = 0.0; bvalue[1] = 0.0;
   ierr = VecSetValues(x,2,row,bvalue,INSERT_VALUES);CHKERRQ(ierr);
-  //TODO tasks 5 and 8
-  //ierr = ...(A,1,row,1e6,x,b); CHKERRQ(ierr);
+  //ierr = ...(A,1,row,1e6,x,b);CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 Create the linear solver and set various options
