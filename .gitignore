@@ -1,2 +1,6 @@
 petsc-maint
 petsc-dev
+exercises/ex*
+!exercises/ex*.c
+solutions/ex*
+!solutions/ex*.c
