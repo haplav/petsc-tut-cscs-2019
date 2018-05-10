@@ -1,5 +1,6 @@
 petsc-maint
 petsc-dev
+slepc-dev
 exercises/ex*
 !exercises/ex*.c
 solutions/ex*
