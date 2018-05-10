@@ -48,3 +48,8 @@ ex9: ex9.o   chkopts
 ex10: ex10.o   chkopts
 	-${CLINKER} -o ex10 ex10.o  ${PETSC_TAO_LIB}
 	${RM} -f ex10.o
+
+ex_matlab: ex_matlab.o   chkopts
+	-${CLINKER} -o ex_matlab ex_matlab.o  ${PETSC_MAT_LIB}
+	${RM} -f ex_matlab.o
+
