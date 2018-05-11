@@ -8,6 +8,14 @@ You can find slides at http://tinyurl.com/petsc-tut-2018.
 Notes
 -----
 
+If `git pull` fails because of local changes, do:
+```
+git stash
+git pull
+git stash pop
+```
+Try to compile the stashed example again. Sometimes you will have to resolve merge conflicts.
+
 Filter the error output - only from rank 0:
 ```
 mpirun -n 3 ./ex3 2>&1 | grep '^\[0\]'
