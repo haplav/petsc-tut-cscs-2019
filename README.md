@@ -8,6 +8,9 @@ You can find slides at http://tinyurl.com/petsc-tut-2018.
 Notes
 -----
 
+DMPlex + FEM example:
+http://www.mcs.anl.gov/petsc/petsc-dev/src/snes/examples/tutorials/ex62.c.html
+
 Convert a distributed vector to a sequential one using `VecScatter`:
 ```
 Vec vin; /* distributed vector */
