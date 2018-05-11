@@ -45,7 +45,7 @@ int main(int argc,char **args)
 
   ierr = VecAXPY(x_matlab,-1.0,x);CHKERRQ(ierr);
   ierr = VecNorm(x_matlab,NORM_2,&norm);CHKERRQ(ierr);
-  ierr = PetscPrintf(comm,"\n||x-x_matlab||=%.8f\n");CHKERRQ(ierr);
+  ierr = PetscPrintf(comm,"\n||x-x_matlab||=%.8f\n",norm);CHKERRQ(ierr);
 
   ierr = MatDestroy(&A);CHKERRQ(ierr);
   ierr = VecDestroy(&b);CHKERRQ(ierr);
