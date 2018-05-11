@@ -5,6 +5,7 @@ CFLAGS	        =
 FFLAGS	        =
 CPPFLAGS        =
 FPPFLAGS        =
+CLEANFILES      = ex6_slepc
 
 include ${SLEPC_DIR}/lib/slepc/conf/slepc_common
 
