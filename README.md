@@ -8,6 +8,20 @@ You can find slides at http://tinyurl.com/petsc-tut-2018.
 Notes
 -----
 
+Convert a distributed vector to a sequential one using `VecScatter`:
+```
+Vec vin; /* distributed vector */
+Vec vout; /* sequential vector (to be created) */
+VecScatter ctx;
+...
+ierr = VecScatterCreateToZero(vin,&ctx,&vout);CHKERRQ(ierr);
+ierr = VecScatterBegin(ctx,vin,vout,INSERT_VALUES,SCATTER_FORWARD);CHKERRQ(ierr);
+ierr = VecScatterEnd(ctx,vin,vout,INSERT_VALUES,SCATTER_FORWARD);CHKERRQ(ierr);
+ierr = VecScatterDestroy(&ctx);CHKERRQ(ierr);
+...
+ierr = VecDestroy(&vout);CHKERRQ(ierr);
+```
+
 If `git pull` fails because of local changes, do:
 ```
 git stash
