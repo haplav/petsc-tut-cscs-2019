@@ -1,17 +1,55 @@
-Hands-on examples for PETSc Basic &amp; Advanced Tutorial (PRACE Training Course), May 2018, Ostrava
-==========
+Hands-on examples for the PRACE Training Course "Scalable Parallel Computations with PETSc" held at CSC - IT Center for Science, Espoo, Finland on 2-3 May 2019
+=======================================
 
 Welcome to the tutorial!
 
-You can find slides at http://tinyurl.com/petsc-tut-2018.
+You can find tutorial information and slides at https://events.prace-ri.eu/event/871/.
 
-Notes
------
+Preliminaries
+-------------
+Login to Taito:
+```
+ssh trainingXXX@taito.csc.fi
+```
+Load newer GIT (since the default one makes problems):
+```
+module add git
+```
+(Feel free to add this line to your ~/.bashrc file.)
 
-DMPlex + FEM example:
-http://www.mcs.anl.gov/petsc/petsc-dev/src/snes/examples/tutorials/ex62.c.html
+Some GIT basics
+---------------
+To make a local copy of this repository:
+```
+# make sure we are at $HOME
+cd
 
-Convert a distributed vector to a sequential one using `VecScatter`:
+# clone into new petsc-tut-cscs-2019 directory
+git clone https://github.com/haplav/petsc-tut-cscs-2019.git
+```
+
+To update your local copy:
+```
+cd ~/petsc-tut-cscs-2019       # path to local clone (contains .git subdirectory)
+git pull
+```
+
+If `git pull` fails because of local changes, stash them first:
+```
+git stash
+git pull
+git stash pop
+```
+Sometimes you will have to resolve merge conflicts (let me know if you struggle with that).
+Then try to compile the example again.
+
+Tips & tricks
+-------------
+
+### DMPlex + FEM example
+  http://www.mcs.anl.gov/petsc/petsc-dev/src/snes/examples/tutorials/ex62.c.html
+
+### Convert a distributed vector to a sequential one using `VecScatter`
 ```
 Vec vin; /* distributed vector */
 Vec vout; /* sequential vector (to be created) */
@@ -25,24 +63,8 @@ ierr = VecScatterDestroy(&ctx);CHKERRQ(ierr);
 ierr = VecDestroy(&vout);CHKERRQ(ierr);
 ```
 
-If `git pull` fails because of local changes, do:
-```
-git stash
-git pull
-git stash pop
-```
-Try to compile the stashed example again. Sometimes you will have to resolve merge conflicts.
-
-Filter the error output - only from rank 0:
+### Filter the error output - only from rank 0
 ```
 mpirun -n 3 ./ex3 2>&1 | grep '^\[0\]'
 
-```
-
-Add this to the python configure script (`arch-impi-imkl-linux-opt.py`) to compile with optimizations:
-```
-    '--with-debugging=0',
-    '--COPTFLAGS=-ipo -O3 -xCORE-AVX2',
-    '--CXXOPTFLAGS=-ipo -O3 -xCORE-AVX2',
-    '--FOPTFLAGS=-ipo -O3 -xCORE-AVX2',
 ```
