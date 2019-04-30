@@ -46,8 +46,11 @@ Then try to compile the example again.
 Tips & tricks
 -------------
 
-### DMPlex + FEM example
-  http://www.mcs.anl.gov/petsc/petsc-dev/src/snes/examples/tutorials/ex62.c.html
+### Filter the error output - only from rank 0
+```
+srun -n 4 ./ex3 2>&1 | grep '^\[0\]'
+
+```
 
 ### Convert a distributed vector to a sequential one using `VecScatter`
 ```
@@ -61,10 +64,4 @@ ierr = VecScatterEnd(ctx,vin,vout,INSERT_VALUES,SCATTER_FORWARD);CHKERRQ(ierr);
 ierr = VecScatterDestroy(&ctx);CHKERRQ(ierr);
 ...
 ierr = VecDestroy(&vout);CHKERRQ(ierr);
-```
-
-### Filter the error output - only from rank 0
-```
-srun -n 4 ./ex3 2>&1 | grep '^\[0\]'
-
 ```
