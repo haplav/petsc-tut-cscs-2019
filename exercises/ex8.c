@@ -11,8 +11,6 @@ static PetscErrorCode ComputeFunction(SNES snes, Vec x, Vec f, void *ctx);
 static PetscErrorCode FormMatrix(DM da, Mat A);
 static PetscErrorCode FormRHS(DM da, Vec b);
 
-#undef __FUNCT__
-#define __FUNCT__ "main"
 int main(int argc,char **args)
 {
   DM             da;
@@ -87,8 +85,6 @@ int main(int argc,char **args)
   return 0;
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "FormMatrix"
 static PetscErrorCode FormMatrix(DM da, Mat A)
 {
   PetscErrorCode ierr;
@@ -121,8 +117,6 @@ static PetscErrorCode FormMatrix(DM da, Mat A)
   PetscFunctionReturn(0);
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "FormRHS"
 static PetscErrorCode FormRHS(DM da, Vec b)
 {
   PetscErrorCode ierr;
@@ -151,8 +145,6 @@ static PetscErrorCode FormRHS(DM da, Vec b)
   PetscFunctionReturn(0);
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "ComputeJacobian"
 static PetscErrorCode ComputeJacobian(SNES snes, Vec x, Mat A, Mat B, void *ctx)
 {
   PetscErrorCode ierr;
@@ -164,8 +156,6 @@ static PetscErrorCode ComputeJacobian(SNES snes, Vec x, Mat A, Mat B, void *ctx)
   PetscFunctionReturn(0);
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "ComputeFunction"
 static PetscErrorCode ComputeFunction(SNES snes, Vec x, Vec f, void *ctx)
 {
   PetscErrorCode ierr;

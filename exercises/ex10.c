@@ -19,8 +19,6 @@ typedef struct {
 
 } AppCtx;
 
-#undef __FUNCT__
-#define __FUNCT__ "main"
 int main(int argc,char **args)
 {
   Tao		 tao;
@@ -105,8 +103,6 @@ int main(int argc,char **args)
   return 0;
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "FormMatrix"
 static PetscErrorCode FormMatrix(DM da, Mat A)
 {
   PetscErrorCode ierr;
@@ -147,8 +143,6 @@ static PetscErrorCode FormMatrix(DM da, Mat A)
   PetscFunctionReturn(0);
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "FormRHS"
 static PetscErrorCode FormRHS(DM da, Vec b)
 {
   PetscErrorCode ierr;
@@ -172,8 +166,6 @@ static PetscErrorCode FormRHS(DM da, Vec b)
   PetscFunctionReturn(0);
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "FormHessian"
 /*
  *    FormHessian computes the quadratic term in the quadratic objective function
  *       Notice that the objective function in this problem is quadratic (therefore a constant
@@ -190,8 +182,6 @@ PetscErrorCode FormHessian(Tao tao,Vec X,Mat hes, Mat Hpre, void *ptr)
 }
 
 
-#undef __FUNCT__
-#define __FUNCT__ "FormFunctionGradient"
 PetscErrorCode FormFunctionGradient(Tao tao, Vec X, PetscReal *fcn,Vec G,void *ptr)
 {
   AppCtx*        user=(AppCtx*)ptr;

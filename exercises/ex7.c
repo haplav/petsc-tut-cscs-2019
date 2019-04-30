@@ -13,8 +13,6 @@ static PetscErrorCode FormMatrix(DM da, Mat A);
 static PetscErrorCode FormRHS(DM da, Vec b);
 static PetscErrorCode FormInitialGuess(DM da, Vec x);
 
-#undef __FUNCT__
-#define __FUNCT__ "main"
 int main(int argc,char **args)
 {
   DM             da;
@@ -107,8 +105,6 @@ int main(int argc,char **args)
   return 0;
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "FormMatrix"
 static PetscErrorCode FormMatrix(DM da, Mat A)
 {
   PetscErrorCode ierr;
@@ -141,8 +137,6 @@ static PetscErrorCode FormMatrix(DM da, Mat A)
   PetscFunctionReturn(0);
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "FormRHS"
 static PetscErrorCode FormRHS(DM da, Vec b)
 {
   PetscErrorCode ierr;
@@ -171,8 +165,6 @@ static PetscErrorCode FormRHS(DM da, Vec b)
   PetscFunctionReturn(0);
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "FormInitialGuess"
 static PetscErrorCode FormInitialGuess(DM da, Vec x)
 {
   PetscErrorCode ierr;
@@ -184,8 +176,6 @@ static PetscErrorCode FormInitialGuess(DM da, Vec x)
 }
 
 
-#undef __FUNCT__
-#define __FUNCT__ "ComputeOperators"
 static PetscErrorCode ComputeOperators(KSP ksp, Mat A, Mat B, void *ctx)
 {
   PetscErrorCode ierr;
@@ -197,8 +187,6 @@ static PetscErrorCode ComputeOperators(KSP ksp, Mat A, Mat B, void *ctx)
   PetscFunctionReturn(0);
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "ComputeRHS"
 static PetscErrorCode ComputeRHS(KSP ksp, Vec b, void *ctx)
 {
   PetscErrorCode ierr;
@@ -210,8 +198,6 @@ static PetscErrorCode ComputeRHS(KSP ksp, Vec b, void *ctx)
   PetscFunctionReturn(0);
 }
 
-#undef __FUNCT__
-#define __FUNCT__ "ComputeInitialGuess"
 static PetscErrorCode ComputeInitialGuess(KSP ksp, Vec x, void *ctx)
 {
   PetscErrorCode ierr;

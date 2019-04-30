@@ -9,8 +9,6 @@ static char help[] = "Solves a tridiagonal linear system with KSP.\n\n";
 
 static PetscErrorCode SlepcAnalysis(Mat A);
 
-#undef __FUNCT__
-#define __FUNCT__ "main"
 int main(int argc,char **args)
 {
   DM             da;
