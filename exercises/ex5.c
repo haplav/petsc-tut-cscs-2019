@@ -24,7 +24,7 @@ int main(int argc,char **args)
   PetscInt       i, n = 5, N, Istart, Iend;
   PetscInt       its;
   PetscInt       row[2], col[2], dbcidx[2];
-  PetscScalar    rho;
+  PetscScalar    rho = 1.0;
   PetscScalar    value[4], bvalue[2];
   PetscReal      norm;
   PetscBool      nonzeroguess = PETSC_FALSE;
