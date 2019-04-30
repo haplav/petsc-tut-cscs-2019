@@ -26,11 +26,9 @@ int main(int argc,char **args)
   PetscInt       row[2], col[2], dbcidx[2];
   PetscScalar    value[4], bvalue[2];
   PetscReal      norm = PETSC_INFINITY;
-  PetscBool      nonzeroguess = PETSC_FALSE;
 
   PetscInitialize(&argc,&args,(char*)0,help);
   ierr = PetscOptionsGetInt(NULL,NULL,"-n",&n,NULL);CHKERRQ(ierr);
-  ierr = PetscOptionsGetBool(NULL,NULL,"-nonzero_guess",&nonzeroguess,NULL);CHKERRQ(ierr);
 
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -48,16 +46,11 @@ int main(int argc,char **args)
   ierr = VecSetFromOptions(x);CHKERRQ(ierr);
   ierr = VecDuplicate(x,&b);CHKERRQ(ierr);
 
-  /*
-     Set the same value to all vector entries.
-  */
-  if (nonzeroguess) {
-    /* Set nonzero initial guess. We use ugly one here to affect number of iterations. */
-    ierr = VecSet(x,-1e3);CHKERRQ(ierr);
-  } else {
-    ierr = VecSet(x,0.0);CHKERRQ(ierr);
-  }
+  /* Set the same value to all vector entries.  */
   ierr = VecSet(b,0.0);CHKERRQ(ierr);
+  //TODO task 4
+  /* Set nonzero initial guess. It is used only if -ksp_initial_guess_nonzero 1, otherwise ignored. */
+  ierr = VecSet(x,1000.0);CHKERRQ(ierr);
     
   /*
      Create matrix.  When using MatCreate(), the matrix format can
@@ -129,8 +122,6 @@ int main(int argc,char **args)
   ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
   ierr = PCSetType(pc,PCNONE);CHKERRQ(ierr);
   ierr = KSPSetTolerances(ksp,1.e-5,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
-  //TODO task 4
-  ierr = KSPSetInitialGuessNonzero(ksp,nonzeroguess);CHKERRQ(ierr);
 
   /*
     Set runtime options, e.g.,
