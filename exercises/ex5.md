@@ -23,7 +23,11 @@ make ex5 && mpirun -n 3 ./ex5
    - This is because KSP ignores the initial guess by default and uses zero vector.
    - This can be changed with `-ksp_initial_guess_nonzero` option or `KSPSetInitialGuessNonzero()` function.
    - Use `-ksp_type gmres -n 16` and compare `-ksp_initial_guess_nonzero {0,1}` - monitor output, number of iterations, and `-ksp_view`.
-10. Bonus: low-level access to direct solvers (see [below](#low-level-access-to-direct-solvers)).
+10. Test the low-level access to direct solvers.
+    - Paste code snippet `ex5_direct.c` to the end of `ex5.c` (before Clean-up section).
+    - Look carefully what is done there.
+    - What does the printed output mean? How to achieve `||x-x1||=0.`?
+    - If you are really fast, you can try solving the system with multiple right hand sides using `MatMatSolve()`.
 
 
 **See also manual pages of `KSPSetFromOptions()`, `KSPSolve()`, `KSPSetType`. Also try `-help` option.**
@@ -48,9 +52,3 @@ make ex5 && mpirun -n 3 ./ex5
     MatZeroRowsIS(A, dbcidx, rho, x, b);
     MatZeroRowsColumnsIS(A, dbcidx, rho, x, b); /* zero also columns, preserving symmetry */
     ```
-
-## Low-level access to direct solvers
-* Paste code snippet `ex5_direct.c` to the end of `ex5.c` (before Clean-up section).
-* Look at the output – what does it say?
-
-
