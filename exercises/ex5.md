@@ -13,8 +13,8 @@ make ex5 && mpirun -n 3 ./ex5
    - PETSc direct solver (`-ksp_type preonly –pc_type cholesky -pc_factor_mat_solver_type petsc`; sequential only, so run with `mpirun -n 1`) fails due to a zero pivot.
    - MUMPS direct solver (`-ksp_type preonly –pc_type cholesky -pc_factor_mat_solver_type mumps`) works because MUMPS supports singular matrix factorizations. However, norm of solution is very large which makes us scared.
    - LSQR iterative solver (`-ksp_type lsqr`) converges to a good-looking least-square solution within a few iterations.
-4. Notice `KSPSetInitialGuessNonzero()` call. Look at its manual page.
-5. Enforce Dirichlet boundary conditions using `MatZeroRowsColumns()` (see [below](#dirichlet-boundary-conditions)).
+4. Notice `-nonzero_guess` option and `KSPSetInitialGuessNonzero()` call. Look at its manual page.
+5. Enforce Dirichlet boundary conditions using `MatZeroRowsColumns()` (see [below](#dirichlet-boundary-conditions)). For now, fix just one side of the string (`ndbc=1`). Run the solvers above again.
 6. Avoid coefficient jumps when enforcing Dirichlet boundary conditions (see [below](#avoid-coefficient-jumps)), compare number of iterations.
 7. View solution using `-ksp_view_solution`.
 8. The string is fixed on one side – modify code to get it fixed on both sides. (Just one number!)
@@ -36,8 +36,13 @@ make ex5 && mpirun -n 3 ./ex5
     ```
 * Then zero the rows using
     ```c
+    MatZeroRows(A, ndbc, dbcidx, diag, x, b); /* ndbc is number of zeroed rows */
+    MatZeroRowsColumns(A, ndbc, dbcidx, diag, x, b); /* zero also columns, preserving symmetry */
+    ```
+    or, if you have `dbcidx` as `IS`,
+    ```c
     MatZeroRowsIS(A, dbcidx, diag, x, b);
-    MatZeroRowsColumnsIS(A, dbcidx, diag, x, b); // zero also columns, preserving symmetry
+    MatZeroRowsColumnsIS(A, dbcidx, diag, x, b); /* zero also columns, preserving symmetry */
     ```
 
 ## Avoid coefficient jumps
