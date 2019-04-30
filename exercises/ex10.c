@@ -99,8 +99,8 @@ int main(int argc,char **args)
 
   ierr = DMDestroy(&user.dm);CHKERRQ(ierr);
   
-  ierr = PetscFinalize();CHKERRQ(ierr);
-  return 0;
+  ierr = PetscFinalize();
+  return ierr;
 }
 
 static PetscErrorCode FormMatrix(DM da, Mat A)
