@@ -24,9 +24,8 @@ int main(int argc,char **args)
   PetscInt       i, n = 5, N, Istart, Iend;
   PetscInt       its;
   PetscInt       row[2], col[2], dbcidx[2];
-  PetscScalar    rho = 1.0;
   PetscScalar    value[4], bvalue[2];
-  PetscReal      norm;
+  PetscReal      norm = PETSC_INFINITY;
   PetscBool      nonzeroguess = PETSC_FALSE;
 
   PetscInitialize(&argc,&args,(char*)0,help);
@@ -93,21 +92,15 @@ int main(int argc,char **args)
   ierr = VecAssemblyBegin(b);CHKERRQ(ierr);
   ierr = VecAssemblyEnd(b);CHKERRQ(ierr);
 
-  //TODO task 6 - use MatGetDiagonal, VecAbs, VecMax; store result into rho
-  ierr = VecDuplicate(b,&d);CHKERRQ(ierr);
-  ierr = MatGetDiagonal(A, d);CHKERRQ(ierr);
-  ierr = VecAbs(d);CHKERRQ(ierr);
-  ierr = VecMax(d,NULL,&rho);CHKERRQ(ierr);
-
   dbcidx[0]=0; dbcidx[1]=N-1;
   bvalue[0] = 0.0; bvalue[1] = 0.0;
   ierr = VecSetValues(x,2,dbcidx,bvalue,INSERT_VALUES);CHKERRQ(ierr);
   ierr = VecAssemblyBegin(x);CHKERRQ(ierr);
   ierr = VecAssemblyEnd(x);CHKERRQ(ierr);
   /* task 5 */
-  /* ierr = MatZeroRowsColumns(A,1,dbcidx,rho,x,b);CHKERRQ(ierr); */
+  /* ierr = MatZeroRowsColumns(A,1,dbcidx,1.0,x,b);CHKERRQ(ierr); */
   /* task 8 */
-  ierr = MatZeroRowsColumns(A,2,dbcidx,rho,x,b);CHKERRQ(ierr);
+  ierr = MatZeroRowsColumns(A,2,dbcidx,1.0,x,b);CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 Create the linear solver and set various options
@@ -159,6 +152,14 @@ int main(int argc,char **args)
   /* Get iteration count */
   ierr = KSPGetIterationNumber(ksp,&its);CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD,"Number of iterations: %D\n",its);CHKERRQ(ierr);
+  //TODO task 6 - use MatGetDiagonal, VecAbs, VecMax; you can reuse PetscReal norm
+  ierr = VecDuplicate(b,&d);CHKERRQ(ierr);
+  ierr = MatGetDiagonal(A, d);CHKERRQ(ierr);
+  ierr = VecAbs(d);CHKERRQ(ierr);
+  ierr = VecMax(d,NULL,&norm);CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,"max(abs(diag(A))) = %.2e\n",norm);CHKERRQ(ierr);
+  ierr = VecMin(d,NULL,&norm);CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,"min(abs(diag(A))) = %.2e\n",norm);CHKERRQ(ierr);
   /* Compute ||x|| */
   ierr = VecNorm(x,NORM_2,&norm);CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD,"||x|| = %.2e\n",norm);CHKERRQ(ierr);

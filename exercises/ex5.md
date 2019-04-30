@@ -15,7 +15,8 @@ make ex5 && mpirun -n 3 ./ex5
    - LSQR iterative solver (`-ksp_type lsqr`) converges to a good-looking least-square solution within a few iterations.
 4. Notice `-nonzero_guess` option and `KSPSetInitialGuessNonzero()` call. Look at its manual page.
 5. Enforce Dirichlet boundary conditions using `MatZeroRowsColumns()` (see [below](#dirichlet-boundary-conditions)). For now, fix just one side of the string (`ndbc=1`). Run the solvers above again.
-6. Avoid coefficient jumps when enforcing Dirichlet boundary conditions (see [below](#avoid-coefficient-jumps)), compare number of iterations.
+6. Look the code section `Analyze the results` and its output. To have some information about the matrix as well, print `max(abs(diag(A)))` and `min(abs(diag(A)))`.
+   - Hint: Use `VecDuplicate()`, `MatGetDiagonal()`, `VecAbs()`, `VecMax()` in this order.
 7. View solution using `-ksp_view_solution`. Try different problem sizes using `-n`.
 8. The string is fixed on one side – modify code to get it fixed on both sides. (Just one number!)
 9. Try various solvers and preconditioners (`-ksp_type`, `-pc_type`),   e.g. `gmres + jacobi`.
@@ -27,34 +28,23 @@ make ex5 && mpirun -n 3 ./ex5
 ## Dirichlet Boundary Conditions
 * Enforce Dirichlet boundary conditions for DOFs with indices in the index set `dbcidx`. In MATLAB it would be something like
     ```matlab
-    diag = 1.0
+    rho = 1.0  % or some other value to avoid jumps, e.g. max(abs(diag(A))) or maxeig(A)
     for i = dbcidx
       x(i) = 0.0     % or other value of prescribed displacement
       A(i,:) = 0;  A(:,i) = 0;
-      A(i,i) = diag;  b(i) = diag*x(i);
+      A(i,i) = rho;  b(i) = rho*x(i);
     end
     ```
 * Then zero the rows using
     ```c
-    MatZeroRows(A, ndbc, dbcidx, diag, x, b); /* ndbc is number of zeroed rows */
-    MatZeroRowsColumns(A, ndbc, dbcidx, diag, x, b); /* zero also columns, preserving symmetry */
+    MatZeroRows(A, ndbc, dbcidx, rho, x, b); /* ndbc is number of zeroed rows */
+    MatZeroRowsColumns(A, ndbc, dbcidx, rho, x, b); /* zero also columns, preserving symmetry */
     ```
     or, if you have `dbcidx` as `IS`,
     ```c
-    MatZeroRowsIS(A, dbcidx, diag, x, b);
-    MatZeroRowsColumnsIS(A, dbcidx, diag, x, b); /* zero also columns, preserving symmetry */
+    MatZeroRowsIS(A, dbcidx, rho, x, b);
+    MatZeroRowsColumnsIS(A, dbcidx, rho, x, b); /* zero also columns, preserving symmetry */
     ```
-
-## Avoid coefficient jumps
-* We can replace
-    ```matlab
-    diag = 1.0
-    ```
-    with the maximum of absolute values of diagonal entries:
-    ```matlab
-    diag = max(abs(diag(A)));
-    ```
-* Use `MatGetDiagonal()`, `VecAbs()`, `VecMax()` to get `diag` in PETSc.
 
 ## Low-level access to direct solvers
 * Paste code snippet `ex5_direct.c` to the end of `ex5.c` (before Clean-up section).
