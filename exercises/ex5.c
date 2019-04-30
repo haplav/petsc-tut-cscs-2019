@@ -48,7 +48,7 @@ int main(int argc,char **args)
 
   /* Set the same value to all vector entries.  */
   ierr = VecSet(b,0.0);CHKERRQ(ierr);
-  //TODO task 4
+  //TODO task 9
   /* Set nonzero initial guess. It is used only if -ksp_initial_guess_nonzero 1, otherwise ignored. */
   ierr = VecSet(x,1000.0);CHKERRQ(ierr);
     
@@ -90,7 +90,7 @@ int main(int argc,char **args)
   ierr = VecSetValues(x,2,dbcidx,bvalue,INSERT_VALUES);CHKERRQ(ierr);
   ierr = VecAssemblyBegin(x);CHKERRQ(ierr);
   ierr = VecAssemblyEnd(x);CHKERRQ(ierr);
-  //TODO task 5 and 8
+  //TODO tasks 4 and 7
   //ierr = ...(A,1,dbcidx,1.0,x,b);CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -141,7 +141,7 @@ int main(int argc,char **args)
   /* Get iteration count */
   ierr = KSPGetIterationNumber(ksp,&its);CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD,"Number of iterations: %D\n",its);CHKERRQ(ierr);
-  //TODO task 6 - use MatGetDiagonal, VecAbs, VecMax; you can reuse PetscReal norm
+  //TODO task 5 - use MatGetDiagonal, VecAbs, VecMax; you can reuse PetscReal norm
   ierr = VecDuplicate(b,&d);CHKERRQ(ierr);
   ierr = PetscPrintf(PETSC_COMM_WORLD,"max(abs(diag(A))) = %.2e\n",norm);CHKERRQ(ierr);
   /* Compute ||x|| */

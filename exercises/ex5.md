@@ -13,13 +13,13 @@ make ex5 && mpirun -n 3 ./ex5
    - PETSc direct solver (`-ksp_type preonly –pc_type cholesky -pc_factor_mat_solver_type petsc`; sequential only, so run with `mpirun -n 1`) fails due to a zero pivot.
    - MUMPS direct solver (`-ksp_type preonly –pc_type cholesky -pc_factor_mat_solver_type mumps`) works because MUMPS supports singular matrix factorizations. However, norm of solution is very large which makes us scared.
    - LSQR iterative solver (`-ksp_type lsqr`) converges to a good-looking least-square solution within a few iterations.
-5. Enforce Dirichlet boundary conditions using `MatZeroRowsColumns()` (see [below](#dirichlet-boundary-conditions)). For now, fix just one side of the string (`ndbc=1`). Run the solvers above again.
-6. Look the code section `Analyze the results` and its output. To have some information about the matrix as well, print `max(abs(diag(A)))` and `min(abs(diag(A)))`.
+4. Enforce Dirichlet boundary conditions using `MatZeroRowsColumns()` (see [below](#dirichlet-boundary-conditions)). For now, fix just one side of the string (`ndbc=1`). Run the solvers above again.
+5. Look the code section `Analyze the results` and its output. To have some information about the matrix as well, print `max(abs(diag(A)))` and `min(abs(diag(A)))`.
    - Hint: Use `VecDuplicate()`, `MatGetDiagonal()`, `VecAbs()`, `VecMax()` in this order.
-7. View solution using `-ksp_view_solution`. Try different problem sizes using `-n`.
-8. The string is fixed on one side – modify code to get it fixed on both sides. (Just one number!)
-9. Try various solvers and preconditioners (`-ksp_type`, `-pc_type`),   e.g. `gmres + jacobi`.
-4. Notice that all values of `x` are initially set to 1000. However, initial residual norm displayed in the monitor output (`-ksp_monitor`) does not correspond to that.
+6. View solution using `-ksp_view_solution`. Try different problem sizes using `-n`.
+7. The string is fixed on one side – modify code to get it fixed on both sides. (Just one number!)
+8. Try various solvers and preconditioners (`-ksp_type`, `-pc_type`),   e.g. `gmres + jacobi`.
+9. Notice that all values of `x` are initially set to 1000. However, initial residual norm displayed in the monitor output (`-ksp_monitor`) does not correspond to that.
    - This is because KSP ignores the initial guess by default and uses zero vector.
    - This can be changed with `-ksp_initial_guess_nonzero` option or `KSPSetInitialGuessNonzero()` function.
    - Use `-ksp_type gmres -n 16` and compare `-ksp_initial_guess_nonzero {0,1}` - monitor output, number of iterations, and `-ksp_view`.
