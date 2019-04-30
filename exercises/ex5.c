@@ -23,7 +23,7 @@ int main(int argc,char **args)
   PetscErrorCode ierr;
   PetscInt       i, n = 5, N, Istart, Iend;
   PetscInt       its;
-  PetscInt       row[2], col[2];
+  PetscInt       row[2], col[2], dbcidx[2];
   PetscScalar    rho;
   PetscScalar    value[4], bvalue[2];
   PetscReal      norm;
@@ -96,13 +96,13 @@ int main(int argc,char **args)
   //TODO task 6 - use MatGetDiagonal, VecAbs, VecMax; store result into rho
   ierr = VecDuplicate(b,&d);CHKERRQ(ierr);
 
-  //TODO tasks 5 and 8
-  row[0]=0; row[1]=N-1;
+  dbcidx[0]=0; dbcidx[1]=N-1;
   bvalue[0] = 0.0; bvalue[1] = 0.0;
-  ierr = VecSetValues(x,2,row,bvalue,INSERT_VALUES);CHKERRQ(ierr);
+  ierr = VecSetValues(x,2,dbcidx,bvalue,INSERT_VALUES);CHKERRQ(ierr);
   ierr = VecAssemblyBegin(x);CHKERRQ(ierr);
   ierr = VecAssemblyEnd(x);CHKERRQ(ierr);
-  //ierr = ...(A,1,row,1e6,x,b);CHKERRQ(ierr);
+  //TODO task 5 and 8
+  //ierr = ...(A,1,dbcidx,rho,x,b);CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 Create the linear solver and set various options
