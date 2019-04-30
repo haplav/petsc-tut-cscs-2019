@@ -26,6 +26,7 @@ int main(int argc,char **args)
   PetscInt       row[2], col[2];
   PetscScalar    rho;
   PetscScalar    value[4], bvalue[2];
+  PetscReal      norm;
   PetscBool      nonzeroguess = PETSC_FALSE;
 
   PetscInitialize(&argc,&args,(char*)0,help);
@@ -52,7 +53,7 @@ int main(int argc,char **args)
      Set the same value to all vector entries.
   */
   if (nonzeroguess) {
-    /* Set nonzero initial guess. Note we use ugly one here to affect number of iterations. */
+    /* Set nonzero initial guess. We use ugly one here to affect number of iterations. */
     ierr = VecSet(x,-1e3);CHKERRQ(ierr);
   } else {
     ierr = VecSet(x,0.0);CHKERRQ(ierr);
@@ -149,8 +150,24 @@ int main(int argc,char **args)
                       Solve the linear system
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = KSPSolve(ksp,b,x);CHKERRQ(ierr);
+
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                      Analyze the results
+     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+  /* Get iteration count */
   ierr = KSPGetIterationNumber(ksp,&its);CHKERRQ(ierr);
-  ierr = PetscPrintf(PETSC_COMM_WORLD,"Iterations %D\n",its);CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,"Number of iterations: %D\n",its);CHKERRQ(ierr);
+  /* Compute ||x|| */
+  ierr = VecNorm(x,NORM_2,&norm);CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,"||x|| = %.2e\n",norm);CHKERRQ(ierr);
+  /* Compute ||b|| */
+  ierr = VecNorm(b,NORM_2,&norm);CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,"||b|| = %.2e\n",norm);CHKERRQ(ierr);
+  /* Compute ||A*x-b|| */
+  ierr = MatMult(A,x,d);CHKERRQ(ierr);
+  ierr = VecAXPY(d,-1.0,b);CHKERRQ(ierr);
+  ierr = VecNorm(d,NORM_2,&norm);CHKERRQ(ierr);
+  ierr = PetscPrintf(PETSC_COMM_WORLD,"||A*x-b|| = %.2e\n",norm);CHKERRQ(ierr);
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                       Low-level access to direct solver
