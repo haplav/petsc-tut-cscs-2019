@@ -16,7 +16,7 @@ make ex5 && mpirun -n 3 ./ex5
 4. Notice `-nonzero_guess` option and `KSPSetInitialGuessNonzero()` call. Look at its manual page.
 5. Enforce Dirichlet boundary conditions using `MatZeroRowsColumns()` (see [below](#dirichlet-boundary-conditions)). For now, fix just one side of the string (`ndbc=1`). Run the solvers above again.
 6. Avoid coefficient jumps when enforcing Dirichlet boundary conditions (see [below](#avoid-coefficient-jumps)), compare number of iterations.
-7. View solution using `-ksp_view_solution`.
+7. View solution using `-ksp_view_solution`. Try different problem sizes using `-n`.
 8. The string is fixed on one side – modify code to get it fixed on both sides. (Just one number!)
 9. Try various solvers and preconditioners (`-ksp_type`, `-pc_type`),   e.g. `gmres + jacobi`.
 10. Bonus: low-level access to direct solvers (see [below](#low-level-access-to-direct-solvers)).
