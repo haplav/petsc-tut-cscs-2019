@@ -1,5 +1,5 @@
 1.  `cd ~/petsc-tut-cscs-2019/exercises && git pull`
-2.  `make ex4 && mpirun -n 3 ./ex4`
+2.  `make ex4 && srun -n 4 ./ex4`
 3.  Look at the code for matrix assembly.
 4.  Add "element contributions" to vector `b` using `VecSetValues()`.
     - Add values `[1;1]` to positions `[0;1], ..., [n-2;n-1]`.

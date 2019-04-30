@@ -65,6 +65,6 @@ ierr = VecDestroy(&vout);CHKERRQ(ierr);
 
 ### Filter the error output - only from rank 0
 ```
-mpirun -n 3 ./ex3 2>&1 | grep '^\[0\]'
+srun -n 4 ./ex3 2>&1 | grep '^\[0\]'
 
 ```

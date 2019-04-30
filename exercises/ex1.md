@@ -1,7 +1,7 @@
 1. `cd ~/petsc-tut-cscs-2019/exercises`
 2. `git pull`
 3. `make ex1`
-4. `mpirun -n 4 ./ex1`
+4. `srun -n 4 ./ex1`
 5. notice direct calls to MPI are possible
 6. compare the error output for PetscPrintfwith and without `CHKERRQ`
 7. fix the error (change the communicator to `PETSC_COMM_WORLD`)

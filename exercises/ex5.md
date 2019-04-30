@@ -2,7 +2,7 @@
 ```
 # usual steps:
 cd ~/petsc-tut-cscs-2019/exercises && git pull
-make ex5 && mpirun -n 3 ./ex5
+make ex5 && srun -n 4 ./ex5
 ```
 1. Monitor convergence: `-ksp_monitor`.
 2. View solver details: `-ksp_view`.
@@ -10,7 +10,7 @@ make ex5 && mpirun -n 3 ./ex5
    - System matrix is singular indefinite.
    - GMRES iterative solver (`-ksp_type gmres`; this is a default) diverges with `DIVERGED_ITS` reason (maximum iteration count reached).
    - CG iterative solver (`-ksp_type cg`) diverges with `DIVERGED_INDEFINITE_MAT` reason.
-   - PETSc direct solver (`-ksp_type preonly –pc_type cholesky -pc_factor_mat_solver_type petsc`; sequential only, so run with `mpirun -n 1`) fails due to a zero pivot.
+   - PETSc direct solver (`-ksp_type preonly –pc_type cholesky -pc_factor_mat_solver_type petsc`; sequential only, so run with `srun -n 1`) fails due to a zero pivot.
    - MUMPS direct solver (`-ksp_type preonly –pc_type cholesky -pc_factor_mat_solver_type mumps`) works because MUMPS supports singular matrix factorizations. However, norm of solution is very large which makes us scared.
    - LSQR iterative solver (`-ksp_type lsqr`) converges to a good-looking least-square solution within a few iterations.
 4. Enforce Dirichlet boundary conditions using `MatZeroRowsColumns()` (see [below](#dirichlet-boundary-conditions)). For now, fix just one side of the string (`ndbc=1`). Run the solvers above again.
