@@ -18,7 +18,7 @@ make ex5 && mpirun -n 3 ./ex5
    - Hint: Use `VecDuplicate()`, `MatGetDiagonal()`, `VecAbs()`, `VecMax()` in this order.
 6. View solution using `-ksp_view_solution`. Try different problem sizes using `-n`.
 7. The string is fixed on one side – modify code to get it fixed on both sides. (Just one number!)
-8. Try various solvers and preconditioners (`-ksp_type`, `-pc_type`),   e.g. `gmres + jacobi`.
+8. Play around with tolerances (`-ksp_rtol`, `-ksp_atol`, `-ksp_max_it`). Try various solvers and preconditioners (`-ksp_type`, `-pc_type`),   e.g. `gmres + jacobi`.
 9. Notice that all values of `x` are initially set to 1000. However, initial residual norm displayed in the monitor output (`-ksp_monitor`) does not correspond to that.
    - This is because KSP ignores the initial guess by default and uses zero vector.
    - This can be changed with `-ksp_initial_guess_nonzero` option or `KSPSetInitialGuessNonzero()` function.
