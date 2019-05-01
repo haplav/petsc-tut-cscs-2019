@@ -1,0 +1,12 @@
+# load all modules needed for build
+module reset
+module load git gcc/8.2.0
+# module hf5-par not available for this combination at the moment; let's use --download-hdf5
+module list
+
+# PETSC_DIR and PETSC_ARCH are not really needed for build.
+# If they are set, they must be correspond to current directory and configure script name, respectively.
+export PETSC_DIR=$USERAPPL/petsc
+export PETSC_ARCH=arch-taito-mpich3-gcc-fblaslapack-dbg
+echo PETSC_DIR=$PETSC_DIR
+echo PETSC_ARCH=$PETSC_ARCH
