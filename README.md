@@ -74,7 +74,9 @@ source /homeappl/home/training026/appl_taito/petsc/env-arch-taito-impi18-icc-mkl
   #   env-arch-taito-mpich3-gcc-fblaslapack-dbg
   #   env-arch-taito-openmpi3-gcc-mkl-dbg
 ```
-Look what these scripts do. If you are interested, look also into the corresponding `arch-$PETSC_ARCH.py` file which I used for PETSc configuration.
+Look what these scripts do.
+The corresponding `arch-$PETSC_ARCH.py` files were used for PETSc configuration;
+we will talk about them in detail later.
 I have added all those files also into [this repository](petsc-config-examples/cscs-taito).
 
 ### Test it!
