@@ -56,6 +56,34 @@ git stash pop
 Sometimes you will have to resolve merge conflicts (let me know if you struggle with that).
 Then try to compile the example again.
 
+Enable PETSc
+------------
+### Option 1: module
+```
+module spider petsc
+module spider petsc/3.10.0
+module load intel/18.0.1 intelmpi/18.0.1 mkl/18.0.1 hdf5-par/1.10.2 petsc/3.10.0
+```
+
+### Option 2 (recommended): use my PETSc installation
+```
+source /homeappl/home/training026/appl_taito/petsc/env-arch-taito-impi18-icc-mkl-dbg
+  # one of
+  #   env-arch-taito-impi18-icc-mkl-dbg
+  #   env-arch-taito-impi19-gcc-mkl-dbg
+  #   env-arch-taito-mpich3-gcc-fblaslapack-dbg
+  #   env-arch-taito-openmpi3-gcc-mkl-dbg
+```
+Look what these scripts do. If you are interested, look also into the corresponding `arch-$PETSC_ARCH.py` file which I used for PETSc configuration.
+I have added all those files also into [this repository](petsc-config-examples/cscs-taito).
+
+### Test it!
+```
+cd ~/petsc-tut-cscs-2019/solutions
+git pull
+make ex1 && srun -n 4 ./ex1
+```
+
 Tips & tricks
 -------------
 
