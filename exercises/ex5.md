@@ -23,7 +23,8 @@ make ex5 && srun -n 4 ./ex5
    - This is because KSP ignores the initial guess by default and uses zero vector.
    - This can be changed with `-ksp_initial_guess_nonzero` option or `KSPSetInitialGuessNonzero()` function.
    - Use `-ksp_type gmres -n 16` and compare `-ksp_initial_guess_nonzero {0,1}` - monitor output, number of iterations, and `-ksp_view`.
-10. Test the low-level access to direct solvers.
+10. Repeat steps 8 and 9 with custom option prefixes.  
+11. Test the low-level access to direct solvers.
     - Paste code snippet `ex5_direct.c` to the end of `ex5.c` (before Clean-up section).
     - Look carefully what is done there.
     - What does the printed output mean? How to achieve `||x-x1||=0.`?
