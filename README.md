@@ -5,18 +5,14 @@ Welcome to the tutorial!
 
 You can find tutorial information and slides at https://events.prace-ri.eu/event/871/.
 
-Preliminaries
+Login to Taito
 -------------
-Login to Taito:
 ```
 ssh trainingXXX@taito.csc.fi
 ```
-Load newer GIT (since the default one makes problems):
-```
-module add git
-```
-(Feel free to add this line to your ~/.bashrc file.)
 
+Start interactive session at Taito
+----------------------------------
 Before running any example or compiling PETSc, start an interactive session on a compute node:
 ```
 salloc -n 4 -t01:00:00
@@ -28,6 +24,12 @@ exit
 
 Some GIT basics
 ---------------
+First of all, load newer GIT (since the default one causes troubles):
+```
+module add git
+```
+(I suggest adding this line to the end of your `~/.bashrc` file.)
+
 To make a local copy of this repository:
 ```
 # make sure we are at $HOME
