@@ -17,6 +17,15 @@ module add git
 ```
 (Feel free to add this line to your ~/.bashrc file.)
 
+Before running any example or compiling PETSc, start an interactive session on a compute node:
+```
+salloc -n 4 -t01:00:00
+```
+and at the end of each hands-on session
+```
+exit
+```
+
 Some GIT basics
 ---------------
 To make a local copy of this repository:
