@@ -5,6 +5,8 @@ Welcome to the tutorial!
 
 You can find tutorial information and slides at https://events.prace-ri.eu/event/871/.
 
+During the tutorial, please open the latest version of slides: https://bit.ly/2VCmLih.
+
 Login to Taito
 -------------
 ```
