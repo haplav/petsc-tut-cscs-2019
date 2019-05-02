@@ -12,7 +12,7 @@ static char help[] = "Appends to an ASCII file.\n\n";
 int main(int argc,char **args)
 {
   PetscViewer    viewer;
-  PetscInt       i, n=5;
+  PetscInt       i, myint=5;
   PetscErrorCode ierr;
   char           filename[PETSC_MAX_PATH_LEN] = "";
   PetscBool      flg;
@@ -26,9 +26,9 @@ int main(int argc,char **args)
     ierr = PetscPrintf(PETSC_COMM_WORLD,"Option -f set to value \"%s\".\n",filename);CHKERRQ(ierr);
   }
   /* TODO task 6 */
-  ierr = PetscOptionsGetInt(NULL,NULL,"-int",&n,&flg);CHKERRQ(ierr);
+  ierr = PetscOptionsGetInt(NULL,NULL,"-myint",&myint,&flg);CHKERRQ(ierr);
   if (flg) {
-    ierr = PetscPrintf(PETSC_COMM_WORLD,"Option -n set to value \"%d\".\n",n);CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_WORLD,"Option -myint set to value \"%D\".\n",myint);CHKERRQ(ierr);
   }
 
   ierr = PetscViewerCreate(PETSC_COMM_WORLD, &viewer);CHKERRQ(ierr);
@@ -37,14 +37,14 @@ int main(int argc,char **args)
 
   /* TODO tasks 4, 5 - insert below */
 
-  for (i = 0; i < n; ++i) {
+  for (i = 0; i < myint; ++i) {
     ierr = PetscViewerASCIIPrintf(viewer, "test line %d\n", i);CHKERRQ(ierr);
   }
 
   ierr = PetscViewerASCIIPrintf(viewer, "========================\n\n");CHKERRQ(ierr);
 
   ierr = PetscViewerASCIIPushSynchronized(viewer);CHKERRQ(ierr);
-  for (i = rank*n; i < rank*n+n; ++i) {
+  for (i = rank*myint; i < rank*myint+myint; ++i) {
     ierr = PetscViewerASCIISynchronizedPrintf(viewer, "test line %d\n", i);CHKERRQ(ierr);
   }
   ierr = PetscViewerASCIISynchronizedPrintf(viewer, "---\n");CHKERRQ(ierr);
