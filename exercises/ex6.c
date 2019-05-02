@@ -79,11 +79,14 @@ int main(int argc,char **args)
   bvalue[0] = 1.0; bvalue[1] = 1.0;
   for (i=0; i<nel; i++) {
     ierr = MatSetValuesLocal(A, 2, e+nen*i, 2, e+nen*i, value, ADD_VALUES);CHKERRQ(ierr);
-    //TODO use VecSetValuesLocal() to set the values
+    ierr = VecSetValuesLocal(b, 2, e+nen*i, bvalue, ADD_VALUES);CHKERRQ(ierr);
   }
   ierr = DMDARestoreElements(da, &nel, &nen, &e);CHKERRQ(ierr);
-  //TODO assemble matrix A
-  //TODO assemble vector b
+  ierr = MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+  ierr = MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+  ierr = VecAssemblyBegin(b);CHKERRQ(ierr);
+  ierr = VecAssemblyEnd(b);CHKERRQ(ierr);
+
   ierr = VecDuplicate(b,&d);CHKERRQ(ierr);
   ierr = MatGetDiagonal(A, d);CHKERRQ(ierr);
   ierr = VecAbs(d);CHKERRQ(ierr);
