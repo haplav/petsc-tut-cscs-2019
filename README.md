@@ -17,7 +17,7 @@ Start interactive session at Taito
 ----------------------------------
 Before running any example or compiling PETSc, start an interactive session on a compute node:
 ```
-salloc -n 4 -t01:00:00
+salloc -n 4 -t01:00:00 --reservation=training
 ```
 and at the end of each hands-on session
 ```
