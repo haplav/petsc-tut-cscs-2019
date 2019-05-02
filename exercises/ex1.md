@@ -3,7 +3,7 @@
 3. `make ex1`
 4. `srun -n 4 ./ex1`
 5. notice direct calls to MPI are possible
-6. compare the error output for PetscPrintfwith and without `CHKERRQ`
+6. compare the error output for `PetscPrintf` with and without `CHKERRQ`
 7. fix the error (change the communicator to `PETSC_COMM_WORLD`)
 8. add similar call to `PetscPrintf`, but now with `PETSC_COMM_SELF` communicator – what‘s the problem?
 9. add similar call to `PetscSynchronizedPrintf`/`PetscSynchronizedFlush` with `PETSC_COMM_WORLD`
