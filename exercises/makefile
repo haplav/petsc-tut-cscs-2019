@@ -5,7 +5,7 @@ CFLAGS	        =
 FFLAGS	        =
 CPPFLAGS        =
 FPPFLAGS        =
-CLEANFILES      = ex_matlab
+CLEANFILES      = ex_matlab ex_vecscatter
 
 include ${PETSC_DIR}/lib/petsc/conf/variables
 include ${PETSC_DIR}/lib/petsc/conf/rules
