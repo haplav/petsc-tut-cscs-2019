@@ -5,3 +5,6 @@ exercises/ex*
 !exercises/ex*.c
 solutions/ex*
 !solutions/ex*.c
+myproject/*
+!myproject/*.c
+!myproject/makefile
