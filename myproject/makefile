@@ -2,8 +2,8 @@ CFLAGS	         =
 FFLAGS	         =
 CPPFLAGS         =
 FPPFLAGS         =
-CLEANFILES       = rhs.vtk solution.vtk
 APPNAME          = myproj
+CLEANFILES       = ${APPNAME} solution.vtk
 
 include ${PETSC_DIR}/lib/petsc/conf/variables
 include ${PETSC_DIR}/lib/petsc/conf/rules
