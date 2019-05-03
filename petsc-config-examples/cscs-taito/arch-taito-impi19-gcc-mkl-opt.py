@@ -14,9 +14,9 @@ if __name__ == '__main__':
     '--with-make-np=4',
 
     '--with-debugging=0',
-    '--COPTFLAGS=-O3 -funroll-all-loops -xAVX -axCORE-AVX2,CORE-AVX-I',
-    '--CXXOPTFLAGS=-O3 -funroll-all-loops -xAVX -axCORE-AVX2,CORE-AVX-I',
-    '--FOPTFLAGS=-O3 -funroll-all-loops -xAVX -axCORE-AVX2,CORE-AVX-I',
+    '--COPTFLAGS=-O3 -march=haswell',
+    '--CXXOPTFLAGS=-O3 -march=haswell',
+    '--FOPTFLAGS=-O3 -march=haswell',
     # see https://software.intel.com/en-us/articles/intel-mkl-link-line-advisor
     '--with-blaslapack-lib=-L%s/lib/intel64 -Wl,--no-as-needed -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm -ldl' % MKL_DIR,
     '--with-blaslapack-include=%s/include' % MKL_DIR,
